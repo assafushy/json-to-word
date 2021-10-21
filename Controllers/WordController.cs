@@ -1,45 +1,42 @@
-﻿using System;
+﻿using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Web.Http;
 using JsonToWord.Converters;
 using JsonToWord.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using log4net;
 
+
 namespace JsonToWord.Controllers
 {
-    public class WordController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class WordController : ControllerBase
     {
-        [HttpGet]
-        [ActionName("status")]
-        public HttpResponseMessage GetStatus()
+
+        [HttpGet("status")]
+        public IActionResult GetStatus()
         {
             var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 
-            var response = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent($"{DateTime.Now} Online - Version {versionInfo.FileVersion}")
-            };
-
-            return response;
+            return Ok($"{DateTime.Now} Online - Version {versionInfo.FileVersion}");
         }
 
-        [HttpPost]
-        [ActionName("create")]
-        public HttpResponseMessage CreateWordDocument(dynamic json)
+        [HttpPost("create")]
+        public IActionResult CreateWordDocument(dynamic json)
         {
-
-
-                log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             try
             {
-
-
                 string test = json.ToString();
                 test = test.Replace("\\\\", "\\");
                 var settings = new JsonSerializerSettings();
@@ -54,30 +51,24 @@ namespace JsonToWord.Controllers
                 var document = wordService.Create();
                 log.Info("Created word document");
 
-                var response = new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(document)
-                };
-
-                return response;
+                return Ok(document);
             }
             catch (Exception e)
             {
-               
-                string logPath = @"c:\logs\prod\JsonToWord.log";
-                File.AppendAllText(logPath, string.Format("\n{0} - {1}", DateTime.Now,e));
 
+                string logPath = @"c:\logs\prod\JsonToWord.log";
+                System.IO.File.AppendAllText(logPath, string.Format("\n{0} - {1}", DateTime.Now, e));
                 throw;
             }
         }
-        [HttpPost]
-        [ActionName("create-by-file")]
-        public HttpResponseMessage CreateWordDocumentByFile(dynamic json)
+
+        [HttpPost("create-by-file")]
+        public IActionResult CreateWordDocumentByFile(dynamic json)
         {
             try
             {
                 string file = json.jsonFilePath;
-                string text = File.ReadAllText(file);
+                string text = System.IO.File.ReadAllText(file);
                 json = JObject.Parse(text);
 
                 log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -96,18 +87,13 @@ namespace JsonToWord.Controllers
                 var document = wordService.Create();
                 log.Info("Created word document");
 
-                var response = new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(document)
-                };
-                return response;
+                return Ok(document);
             }
-            catch(Exception e) {
+            catch (Exception e)
+            {
                 return null;
             }
 
-            
         }
-
     }
 }

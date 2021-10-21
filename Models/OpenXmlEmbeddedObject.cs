@@ -180,94 +180,95 @@ namespace JsonToWord.Models
         /// </summary>
         /// <param name="fileInfo">The FileInfo object for the file to be embedded</param>
         /// <param name="displayAsIcon">Whether or not to display the file as an Icon (Otherwise it will show a snapshot view of the file)</param>
-        public OpenXmlEmbeddedObject(FileInfo fileInfo, bool displayAsIcon)
-        {
-            _fileInfo = fileInfo;
-            _filePathAndName = fileInfo.ToString();
-            _displayAsIcon = displayAsIcon;
+        
+        //public OpenXmlEmbeddedObject(FileInfo fileInfo, bool displayAsIcon) ***Fix Later***
+        //{
+        //    _fileInfo = fileInfo;
+        //    _filePathAndName = fileInfo.ToString();
+        //    _displayAsIcon = displayAsIcon;
 
-            SetupOleFileInformation();
-        }
+        //    SetupOleFileInformation();
+        //}
 
-        private void SetupOleFileInformation()
-        {
-            var wordApplication = new Microsoft.Office.Interop.Word.Application();
+        //private void SetupOleFileInformation()
+        //{
+        //    var wordApplication = new Microsoft.Office.Interop.Word.Application();
 
-            var wordDocument = wordApplication.Documents.Add(ref _objectMissing, ref _objectMissing,
-                ref _objectMissing, ref _objectMissing);
+        //    var wordDocument = wordApplication.Documents.Add(ref _objectMissing, ref _objectMissing,
+        //        ref _objectMissing, ref _objectMissing);
 
-            object iconObjectFileName = _objectMissing;
-            object objectClassType = FileType;
-            object objectFilename = _fileInfo.ToString();
+        //    object iconObjectFileName = _objectMissing;
+        //    object objectClassType = FileType;
+        //    object objectFilename = _fileInfo.ToString();
 
-            if (_displayAsIcon)
-            {
-                if (ObjectIcon != null)
-                {
-                    using (var iconStream = new FileStream(ObjectIconFile, FileMode.Create))
-                    {
-                        ObjectIcon.Save(iconStream);
-                        iconObjectFileName = ObjectIconFile;
-                    }
-                }
+        //    if (_displayAsIcon)
+        //    {
+        //        if (ObjectIcon != null)
+        //        {
+        //            using (var iconStream = new FileStream(ObjectIconFile, FileMode.Create))
+        //            {
+        //                ObjectIcon.Save(iconStream);
+        //                iconObjectFileName = ObjectIconFile;
+        //            }
+        //        }
 
-                object objectIconLabel = _fileInfo.Name;
+        //        object objectIconLabel = _fileInfo.Name;
 
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+        //        Thread.Sleep(TimeSpan.FromSeconds(1));
 
-                wordDocument.InlineShapes.AddOLEObject(ref objectClassType,
-                    ref objectFilename, ref _objectFalse, ref _objectTrue, ref iconObjectFileName,
-                    ref _objectMissing, ref objectIconLabel, ref _objectMissing);
-            }
-            else
-            {
-                try
-                {
-                    var image = Image.FromFile(_fileInfo.ToString());
-                    _objectIsPicture = true;
-                    OleImageStyle = $"height:{image.Height}pt;width:{image.Width}pt";
+        //        wordDocument.InlineShapes.AddOLEObject(ref objectClassType,
+        //            ref objectFilename, ref _objectFalse, ref _objectTrue, ref iconObjectFileName,
+        //            ref _objectMissing, ref objectIconLabel, ref _objectMissing);
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            var image = Image.FromFile(_fileInfo.ToString());
+        //            _objectIsPicture = true;
+        //            OleImageStyle = $"height:{image.Height}pt;width:{image.Width}pt";
 
-                    wordDocument.InlineShapes.AddPicture(_fileInfo.ToString(), ref _objectMissing, ref _objectTrue, ref _objectMissing);
-                }
-                catch
-                {
-                    wordDocument.InlineShapes.AddOLEObject(ref objectClassType,
-                        ref objectFilename, ref _objectFalse, ref _objectFalse, ref _objectMissing, ref _objectMissing,
-                        ref _objectMissing, ref _objectMissing);
-                }
-            }
+        //            wordDocument.InlineShapes.AddPicture(_fileInfo.ToString(), ref _objectMissing, ref _objectTrue, ref _objectMissing);
+        //        }
+        //        catch
+        //        {
+        //            wordDocument.InlineShapes.AddOLEObject(ref objectClassType,
+        //                ref objectFilename, ref _objectFalse, ref _objectFalse, ref _objectMissing, ref _objectMissing,
+        //                ref _objectMissing, ref _objectMissing);
+        //        }
+        //    }
 
-            WordOpenXml = wordDocument.Range(ref _objectMissing, ref _objectMissing).WordOpenXML;
+        //    WordOpenXml = wordDocument.Range(ref _objectMissing, ref _objectMissing).WordOpenXML;
 
-            if (_objectIsPicture)
-            {
-                OleObjectBinaryData = GetPictureBinaryData();
-                OleImageBinaryData = GetPictureBinaryData();
-            }
-            else
-            {
-                OleObjectBinaryData = GetOleBinaryData(OleObjectDataTag);
-                OleImageBinaryData = GetOleBinaryData(OleImageDataTag);
-            }
+        //    if (_objectIsPicture)
+        //    {
+        //        OleObjectBinaryData = GetPictureBinaryData();
+        //        OleImageBinaryData = GetPictureBinaryData();
+        //    }
+        //    else
+        //    {
+        //        OleObjectBinaryData = GetOleBinaryData(OleObjectDataTag);
+        //        OleImageBinaryData = GetOleBinaryData(OleImageDataTag);
+        //    }
 
-            // Not sure why, but Excel seems to hang in the processes if you attach an Excel file…
-            // This kills the excel process that has been started < 15 seconds ago (so not to kill the user's other Excel processes that may be open)
-            /*if (FileType.StartsWith("Excel"))
-            {
-                var processes = Process.GetProcessesByName("EXCEL");
-                foreach (var process in processes)
-                {
-                    if (DateTime.Now.Subtract(process.StartTime).Seconds <= 15)
-                    {
-                        process.Kill();
-                        break;
-                    }
-                }
-            }*/
+        //    // Not sure why, but Excel seems to hang in the processes if you attach an Excel file…
+        //    // This kills the excel process that has been started < 15 seconds ago (so not to kill the user's other Excel processes that may be open)
+        //    /*if (FileType.StartsWith("Excel"))
+        //    {
+        //        var processes = Process.GetProcessesByName("EXCEL");
+        //        foreach (var process in processes)
+        //        {
+        //            if (DateTime.Now.Subtract(process.StartTime).Seconds <= 15)
+        //            {
+        //                process.Kill();
+        //                break;
+        //            }
+        //        }
+        //    }*/
 
-            wordDocument.Close(ref _objectFalse, ref _objectMissing, ref _objectMissing);
-            wordApplication.Quit(ref _objectMissing, ref _objectMissing, ref _objectMissing);
-        }
+        //    wordDocument.Close(ref _objectFalse, ref _objectMissing, ref _objectMissing);
+        //    wordApplication.Quit(ref _objectMissing, ref _objectMissing, ref _objectMissing);
+        //}
 
         private string GetOleBinaryData(string binaryDataXmlTag)
         {
