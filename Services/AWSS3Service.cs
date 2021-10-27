@@ -24,6 +24,10 @@ namespace JsonToWord.Services
         }
         public string DownloadFileFromS3BucketAsync(Uri webPath, string filename)
         {
+            if (!Directory.Exists(localPath))
+            {
+                Directory.CreateDirectory(localPath);
+            }
             string ext = Path.GetExtension(webPath.AbsoluteUri);
             string fullPath = localPath + filename + ext;
             try
@@ -59,7 +63,7 @@ namespace JsonToWord.Services
                 };
 
                 RegionEndpoint region = RegionEndpoint.GetBySystemName(uploadProperties.Region);
-                using (var util = new TransferUtility(uploadProperties.AwsAccessKeyId,uploadProperties.AwsSecretAccessKey,region))
+                using (var util = new TransferUtility(uploadProperties.AwsAccessKeyId, uploadProperties.AwsSecretAccessKey, region))
                 {
                     await util.UploadAsync(transferUtilityRequest);
                 }
