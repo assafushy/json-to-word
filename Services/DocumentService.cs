@@ -11,15 +11,13 @@ namespace JsonToWord.Services
     {
         internal string CreateDocument(string templatePath)
         {
-            
-         
             var destinationFile = templatePath.Replace(".dot", ".doc");
-          
+
             byte[] templateBytes = null;
-               
-                templateBytes = File.ReadAllBytes(templatePath);
-          
-         
+
+            templateBytes = File.ReadAllBytes(templatePath);
+
+
 
             using (var templateStream = new MemoryStream())
             {
@@ -34,7 +32,7 @@ namespace JsonToWord.Services
 
                 File.WriteAllBytes(destinationFile, templateStream.ToArray());
             }
-         
+
 
             return destinationFile;
         }

@@ -1,20 +1,14 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using JsonToWord.Converters;
+﻿using JsonToWord.Converters;
 using JsonToWord.Models;
+using JsonToWord.Models.S3;
+using JsonToWord.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using log4net;
-
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace JsonToWord.Controllers
 {
@@ -22,6 +16,12 @@ namespace JsonToWord.Controllers
     [ApiController]
     public class WordController : ControllerBase
     {
+        private readonly IAWSS3Service _aWSS3Service;
+
+        public WordController(IAWSS3Service aWSS3Service)
+        { 
+            _aWSS3Service = aWSS3Service;
+        }
 
         [HttpGet("status")]
         public IActionResult GetStatus()
@@ -32,30 +32,41 @@ namespace JsonToWord.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateWordDocument(dynamic json)
+        public async Task<IActionResult> CreateWordDocument(dynamic json)
         {
             log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             try
             {
-                string test = json.ToString();
-                test = test.Replace("\\\\", "\\");
                 var settings = new JsonSerializerSettings();
                 settings.Converters.Add(new WordObjectConverter());
-                var wordModel = JsonConvert.DeserializeObject<WordModel>(json.ToString(), settings);
-
+                WordModel wordModel = JsonConvert.DeserializeObject<WordModel>(json.ToString(), settings);
+                string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath,wordModel.UploadProperties.FileName);
+                wordModel.LocalPath = fullpath;
                 log.Info("Initilized word model object");
 
                 var wordService = new WordService(wordModel);
-
-
-                var document = wordService.Create();
+                var documentPath = wordService.Create();
                 log.Info("Created word document");
 
-                return Ok(document);
+                _aWSS3Service.CleanUp(fullpath);
+
+                wordModel.UploadProperties.LocalFilePath = documentPath;
+
+                AWSUploadResult<string> Response = await _aWSS3Service.UploadFileToS3BucketAsync(wordModel.UploadProperties);
+                _aWSS3Service.CleanUp(documentPath);
+
+                if (Response.Status)
+                {
+                    return Ok(Response.Data);
+                }
+                else
+                {
+                    return StatusCode(Response.StatusCode);
+                }
+
             }
             catch (Exception e)
             {
-
                 string logPath = @"c:\logs\prod\JsonToWord.log";
                 System.IO.File.AppendAllText(logPath, string.Format("\n{0} - {1}", DateTime.Now, e));
                 throw;

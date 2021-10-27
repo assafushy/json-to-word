@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using JsonToWord.Models.S3;
+using System;
+using System.Collections.Generic;
 
 namespace JsonToWord.Models
 {
     public class WordModel
     {
-        public string TemplatePath { get; set; }
+        public UploadProperties UploadProperties { get; set; }
+        public Uri TemplatePath { get; set; }
         public List<WordContentControl> ContentControls { get; set; }
+        public string LocalPath { get; set; }
+
     }
 }

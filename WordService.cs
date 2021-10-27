@@ -21,7 +21,7 @@ namespace JsonToWord
 
             var documentService = new DocumentService();
 
-            var documentPath = documentService.CreateDocument(_wordModel.TemplatePath);
+            var documentPath = documentService.CreateDocument(_wordModel.LocalPath);
 
             var contentControlService = new ContentControlService();
             var fileService = new FileService();
