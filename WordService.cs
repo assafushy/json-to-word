@@ -3,32 +3,36 @@ using DocumentFormat.OpenXml.Packaging;
 using JsonToWord.Models;
 using JsonToWord.Services;
 using System.IO;
+using JsonToWord.Services.Interfaces;
 
 namespace JsonToWord
 {
-    public class WordService
+    public class WordService : IWordService
     {
-        private readonly WordModel _wordModel;
+        private readonly ContentControlService _contentControlService;
+        private readonly FileService _fileService;
+        private readonly HtmlService _htmlService;
+        private readonly PictureService _pictureService;
+        private readonly TableService _tableService;
+        private readonly TextService _textService;
+        private readonly DocumentService _documentService;
 
-        public WordService(WordModel wordModel)
+        public WordService()
         {
-            _wordModel = wordModel;
+            _contentControlService = new ContentControlService();
+            _fileService = new FileService(); //doesen't work due to interop
+            _htmlService = new HtmlService();
+            _pictureService = new PictureService();
+            _tableService = new TableService(); //doesen't work due to interop
+            _textService = new TextService();
+            _documentService = new DocumentService();
         }
 
-        public string Create()
+        public string Create(WordModel _wordModel)
         {
             log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-            var documentService = new DocumentService();
-
-            var documentPath = documentService.CreateDocument(_wordModel.LocalPath);
-
-            var contentControlService = new ContentControlService();
-            var fileService = new FileService();
-            var htmlService = new HtmlService();
-            var pictureService = new PictureService();
-            var tableService = new TableService();
-            var textService = new TextService();
+            var documentPath = _documentService.CreateDocument(_wordModel.LocalPath);
 
             using (var document = WordprocessingDocument.Open(documentPath, true))
             {
@@ -36,7 +40,7 @@ namespace JsonToWord
 
                 foreach (var contentControl in _wordModel.ContentControls)
                 {
-                    contentControlService.ClearContentControl(document, contentControl.Title, contentControl.ForceClean);
+                    _contentControlService.ClearContentControl(document, contentControl.Title, contentControl.ForceClean);
 
                     foreach (var wordObject in contentControl.WordObjects)
                     {
@@ -46,13 +50,13 @@ namespace JsonToWord
                             //    fileService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
                             //    break;
                             case WordObjectType.Html:
-                                htmlService.Insert(document, contentControl.Title, (WordHtml)wordObject);
+                                _htmlService.Insert(document, contentControl.Title, (WordHtml)wordObject);
                                 break;
                             case WordObjectType.Picture:
-                                pictureService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
+                                _pictureService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
                                 break;
                             case WordObjectType.Paragraph:
-                                textService.Write(document, contentControl.Title, (WordParagraph)wordObject);
+                                _textService.Write(document, contentControl.Title, (WordParagraph)wordObject);
                                 break;
                             //case WordObjectType.Table:
                             //    tableService.Insert(document, contentControl.Title, (WordTable)wordObject);
@@ -62,7 +66,7 @@ namespace JsonToWord
                         }
                     }
 
-                    contentControlService.RemoveContentControl(document, contentControl.Title);
+                    _contentControlService.RemoveContentControl(document, contentControl.Title);
                 }
                 log.Info("Finished on doc path: " + documentPath);
 
@@ -70,7 +74,7 @@ namespace JsonToWord
             }
 
             //documentService.RunMacro(documentPath, "updateTableOfContent",sw);
-            log.Info("Ran Macro");
+            //log.Info("Ran Macro");
 
             return documentPath;
         }

@@ -7,9 +7,9 @@ using System;
 
 namespace JsonToWord.Services
 {
-    internal class DocumentService
+    public class DocumentService
     {
-        internal string CreateDocument(string templatePath)
+         public string CreateDocument(string templatePath)
         {
             var destinationFile = templatePath.Replace(".dot", ".doc");
 

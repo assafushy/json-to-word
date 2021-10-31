@@ -22,6 +22,7 @@ namespace JsonToWord
             services.AddControllers();
             services.AddSwaggerGen();
             services.AddTransient<IAWSS3Service, AWSS3Service>();
+            services.AddTransient<IWordService,WordService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -17,10 +17,12 @@ namespace JsonToWord.Controllers
     public class WordController : ControllerBase
     {
         private readonly IAWSS3Service _aWSS3Service;
+        private readonly IWordService _wordService;
 
-        public WordController(IAWSS3Service aWSS3Service)
+        public WordController(IAWSS3Service aWSS3Service,IWordService wordService)
         { 
             _aWSS3Service = aWSS3Service;
+            _wordService = wordService;
         }
 
         [HttpGet("status")]
@@ -44,8 +46,8 @@ namespace JsonToWord.Controllers
                 wordModel.LocalPath = fullpath;
                 log.Info("Initilized word model object");
 
-                var wordService = new WordService(wordModel);
-                var documentPath = wordService.Create();
+                //var wordService = new WordService();
+                var documentPath = _wordService.Create(wordModel);
                 log.Info("Created word document");
 
                 _aWSS3Service.CleanUp(fullpath);
@@ -92,10 +94,10 @@ namespace JsonToWord.Controllers
 
                 log.Info("Initilized word model object");
 
-                var wordService = new WordService(wordModel);
+                var wordService = new WordService();
 
 
-                var document = wordService.Create();
+                var document = wordService.Create(wordModel);
                 log.Info("Created word document");
 
                 return Ok(document);

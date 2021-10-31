@@ -7,18 +7,26 @@ namespace JsonToWord.Services
 {
     internal class TextService
     {
+        private readonly ParagraphService _paragraphService;
+        private readonly RunService _runService;
+        private readonly ContentControlService _contentControlService;
+
+        public TextService()
+        {
+            _paragraphService = new ParagraphService();
+            _runService = new RunService();
+            _contentControlService = new ContentControlService();
+        }
         internal void Write(WordprocessingDocument document, string contentControlTitle, WordParagraph wordParagraph)
         {
-            var paragraphService = new ParagraphService();
-            var paragraph = paragraphService.CreateParagraph(wordParagraph);
+            var paragraph = _paragraphService.CreateParagraph(wordParagraph);
 
-            var runService = new RunService();
 
             if (wordParagraph.Runs != null)
             {
                 foreach (var wordRun in wordParagraph.Runs)
                 {
-                    var run = runService.CreateRun(wordRun);
+                    var run = _runService.CreateRun(wordRun);
 
                     if (wordRun.Uri != null)
                     {
@@ -35,8 +43,7 @@ namespace JsonToWord.Services
                 }
             }
 
-            var contentControlService = new ContentControlService();
-            var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
+            var sdtBlock = _contentControlService.FindContentControl(document, contentControlTitle);
 
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(paragraph);
