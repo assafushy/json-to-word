@@ -10,92 +10,92 @@ namespace JsonToWord.Services
 {
     internal class TableService
     {
-        //public void Insert(WordprocessingDocument document, string contentControlTitle, WordTable wordTable)
-        //{
-        //    var table = CreateTable(document, wordTable);
+        public void Insert(WordprocessingDocument document, string contentControlTitle, WordTable wordTable)
+        {
+            var table = CreateTable(document, wordTable);
 
-        //    var contentControlService = new ContentControlService();
-        //    var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
+            var contentControlService = new ContentControlService();
+            var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
 
-        //    var sdtContentBlock = new SdtContentBlock();
-        //    sdtContentBlock.AppendChild(table);
+            var sdtContentBlock = new SdtContentBlock();
+            sdtContentBlock.AppendChild(table);
 
-        //    sdtBlock.AppendChild(sdtContentBlock);
-        //}
+            sdtBlock.AppendChild(sdtContentBlock);
+        }
 
-        //private Table CreateTable(WordprocessingDocument document, WordTable wordTable)
-        //{
-        //    var tableBorders = CreateTableBorders();
-        //    var tableWidth = new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct };
+        private Table CreateTable(WordprocessingDocument document, WordTable wordTable)
+        {
+            var tableBorders = CreateTableBorders();
+            var tableWidth = new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct };
 
-        //    var tableProperties = new TableProperties();
-        //    tableProperties.AppendChild(tableBorders);
-        //    tableProperties.AppendChild(tableWidth);
+            var tableProperties = new TableProperties();
+            tableProperties.AppendChild(tableBorders);
+            tableProperties.AppendChild(tableWidth);
 
-        //    var isHeaderRow = true;
-        //    var table = new Table();
-        //    table.AppendChild(tableProperties);
-            
-        //    foreach (var documentRow in wordTable.Rows)
-        //    {
-        //        var tableRow = new TableRow { RsidTableRowProperties = "00812C40" };
+            var isHeaderRow = true;
+            var table = new Table();
+            table.AppendChild(tableProperties);
 
-        //        if (wordTable.RepeatHeaderRow && isHeaderRow)
-        //        {
-        //            var tableHeader = new TableHeader();
+            foreach (var documentRow in wordTable.Rows)
+            {
+                var tableRow = new TableRow { RsidTableRowProperties = "00812C40" };
 
-        //            var tableRowProperties = new TableRowProperties();
-        //            tableRowProperties.AppendChild(tableHeader);
+                if (wordTable.RepeatHeaderRow && isHeaderRow)
+                {
+                    var tableHeader = new TableHeader();
 
-        //            tableRow.AppendChild(tableRowProperties);
+                    var tableRowProperties = new TableRowProperties();
+                    tableRowProperties.AppendChild(tableHeader);
 
-        //            isHeaderRow = false;
-        //        }
+                    tableRow.AppendChild(tableRowProperties);
 
-        //        foreach (var cell in documentRow.Cells)
-        //        {
-        //            var tableCellBorders = CreateTableCellBorders();
-        //            var tableCellWidth = new TableCellWidth { Width = cell.Width, Type = TableWidthUnitValues.Dxa };
+                    isHeaderRow = false;
+                }
 
-        //            var tableCellProperties = new TableCellProperties();
-        //            tableCellProperties.AppendChild(tableCellWidth);
-        //            tableCellProperties.AppendChild(tableCellBorders);
+                foreach (var cell in documentRow.Cells)
+                {
+                    var tableCellBorders = CreateTableCellBorders();
+                    var tableCellWidth = new TableCellWidth { Width = cell.Width, Type = TableWidthUnitValues.Dxa };
 
-        //            if (documentRow.MergeToOneCell)
-        //            {
-        //                var gridSpan = new GridSpan { Val = documentRow.NumberOfCellsToMerge };
-        //                tableCellProperties.AppendChild(gridSpan);
-        //            }
+                    var tableCellProperties = new TableCellProperties();
+                    tableCellProperties.AppendChild(tableCellWidth);
+                    tableCellProperties.AppendChild(tableCellBorders);
 
-        //            if (cell.Shading != null)
-        //            {
-        //                var cellShading = new Shading
-        //                {
-        //                    Val = ShadingPatternValues.Clear,
-        //                    Color = cell.Shading.Color,
-        //                    Fill = cell.Shading.Fill,
-        //                    ThemeFill = ThemeColorValues.Text2,
-        //                    ThemeFillShade = cell.Shading.ThemeFillShade
-        //                };
+                    if (documentRow.MergeToOneCell)
+                    {
+                        var gridSpan = new GridSpan { Val = documentRow.NumberOfCellsToMerge };
+                        tableCellProperties.AppendChild(gridSpan);
+                    }
 
-        //                tableCellProperties.AppendChild(cellShading);
-        //            }
+                    if (cell.Shading != null)
+                    {
+                        var cellShading = new Shading
+                        {
+                            Val = ShadingPatternValues.Clear,
+                            Color = cell.Shading.Color,
+                            Fill = cell.Shading.Fill,
+                            ThemeFill = ThemeColorValues.Text2,
+                            ThemeFillShade = cell.Shading.ThemeFillShade
+                        };
 
-        //            var tableCell = new TableCell();
-        //            tableCell.AppendChild(tableCellProperties);
+                        tableCellProperties.AppendChild(cellShading);
+                    }
 
-        //            tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
-        //            tableCell = AppendAttachments(tableCell, cell.Attachments, document);
-        //            tableCell = AppendHtml(tableCell, cell.Html, document);
+                    var tableCell = new TableCell();
+                    tableCell.AppendChild(tableCellProperties);
 
-        //            tableRow.AppendChild(tableCell);
-        //        }
+                    tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
+                    tableCell = AppendAttachments(tableCell, cell.Attachments, document);
+                    tableCell = AppendHtml(tableCell, cell.Html, document);
 
-        //        table.AppendChild(tableRow);
-        //    }
+                    tableRow.AppendChild(tableCell);
+                }
 
-        //    return table;
-        //}
+                table.AppendChild(tableRow);
+            }
+
+            return table;
+        }
 
         private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
         {
@@ -127,51 +127,51 @@ namespace JsonToWord.Services
             return tableCell;
         }
 
-        //private TableCell AppendAttachments(TableCell tableCell, List<WordAttachment> wordAttachments, WordprocessingDocument document)
-        //{
-        //    if (wordAttachments == null || !wordAttachments.Any())
-        //        return tableCell;
+        private TableCell AppendAttachments(TableCell tableCell, List<WordAttachment> wordAttachments, WordprocessingDocument document)
+        {
+            if (wordAttachments == null || !wordAttachments.Any())
+                return tableCell;
 
-        //    var fileService = new FileService();
-        //    var pictureService = new PictureService();
+            var fileService = new FileService();
+            var pictureService = new PictureService();
 
-        //    foreach (var wordAttachment in wordAttachments)
-        //    {
-        //        switch (wordAttachment.Type)
-        //        {
-        //            case WordObjectType.File:
-        //            {
-        //                var embeddedFile = fileService.CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
+            foreach (var wordAttachment in wordAttachments)
+            {
+                switch (wordAttachment.Type)
+                {
+                    case WordObjectType.File:
+                        {
+                            var embeddedFile = fileService.CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
 
-        //                var run = new Run();
-        //                run.AppendChild(embeddedFile);
+                            var run = new Run();
+                            run.AppendChild(embeddedFile);
 
-        //                var paragraph = new Paragraph();
-        //                paragraph.AppendChild(run);
+                            var paragraph = new Paragraph();
+                            paragraph.AppendChild(run);
 
-        //                tableCell.AppendChild(paragraph);
-        //                break;
-        //            }
-        //            case WordObjectType.Picture:
-        //            {
-        //                var drawing = pictureService.CreateDrawing(document.MainDocumentPart, wordAttachment.Path);
+                            tableCell.AppendChild(paragraph);
+                            break;
+                        }
+                    case WordObjectType.Picture:
+                        {
+                            var drawing = pictureService.CreateDrawing(document.MainDocumentPart, wordAttachment.Path);
 
-        //                var run = new Run();
-        //                run.AppendChild(drawing);
+                            var run = new Run();
+                            run.AppendChild(drawing);
 
-        //                var paragraph = new Paragraph();
-        //                paragraph.AppendChild(run);
+                            var paragraph = new Paragraph();
+                            paragraph.AppendChild(run);
 
-        //                tableCell.AppendChild(paragraph);
-        //                break;
-        //            }
-        //            default:
-        //                continue;
-        //        }
-        //    }
+                            tableCell.AppendChild(paragraph);
+                            break;
+                        }
+                    default:
+                        continue;
+                }
+            }
 
-        //    return tableCell;
-        //}
+            return tableCell;
+        }
 
         private TableCell AppendParagraphs(TableCell tableCell, List<WordParagraph> wordParagraphs, WordprocessingDocument document)
         {

@@ -10,66 +10,67 @@ namespace JsonToWord.Services
 {
     internal class FileService
     {
-        //internal void Insert(WordprocessingDocument document, string contentControlTitle, WordAttachment wordAttachment)
-        //{
-        //    var embeddedFile = CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
-            
-        //    var run = new Run();
-        //    run.AppendChild(embeddedFile);
+        internal void Insert(WordprocessingDocument document, string contentControlTitle, WordAttachment wordAttachment)
+        {
+            var embeddedFile = CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
 
-        //    var paragraph = new Paragraph();
-        //    paragraph.AppendChild(run);
-            
-        //    var sdtContentBlock = new SdtContentBlock();
-        //    sdtContentBlock.AppendChild(paragraph);
+            var run = new Run();
+            run.AppendChild(embeddedFile);
 
-        //    var contentControlService = new ContentControlService();
-        //    var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
-        //    sdtBlock.AppendChild(sdtContentBlock);
-        //}
+            var paragraph = new Paragraph();
+            paragraph.AppendChild(run);
 
-        //internal EmbeddedObject CreateEmbeddedObject(MainDocumentPart mainDocumentPart, string filePath, bool displayAsIcon)
-        //{
-        //    EmbeddedObject embeddedObject;
+            var sdtContentBlock = new SdtContentBlock();
+            sdtContentBlock.AppendChild(paragraph);
 
-        //    var fileInfo = new FileInfo(filePath);
-        //    var openXmlEmbeddedObject = new OpenXmlEmbeddedObject(fileInfo, displayAsIcon);
+            var contentControlService = new ContentControlService();
+            var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
+            sdtBlock.AppendChild(sdtContentBlock);
+        }
 
-        //    if (string.IsNullOrEmpty(openXmlEmbeddedObject.OleObjectBinaryData))
-        //        return null;
+        internal EmbeddedObject CreateEmbeddedObject(MainDocumentPart mainDocumentPart, string filePath, bool displayAsIcon)
+        {
+            EmbeddedObject embeddedObject;
 
-        //    using (var dataStream = new MemoryStream(Convert.FromBase64String(openXmlEmbeddedObject.OleObjectBinaryData)))
-        //    {
-        //        if (string.IsNullOrEmpty(openXmlEmbeddedObject.OleImageBinaryData))
-        //            return null;
+            var fileInfo = new FileInfo(filePath);
+            var openXmlEmbeddedObject = new OpenXmlEmbeddedObject(fileInfo, displayAsIcon);
 
-        //        using (var emfStream = new MemoryStream(Convert.FromBase64String(openXmlEmbeddedObject.OleImageBinaryData)))
-        //        {
-        //            var imagePartId = GetUniqueXmlItemId();
-        //            var imagePart = mainDocumentPart.AddImagePart(ImagePartType.Emf, imagePartId);
 
-        //            imagePart.FeedData(emfStream);
+            if (string.IsNullOrEmpty(openXmlEmbeddedObject.OleObjectBinaryData))
+                return null;
 
-        //            var embeddedPackagePartId = GetUniqueXmlItemId();
+            using (var dataStream = new MemoryStream(Convert.FromBase64String(openXmlEmbeddedObject.OleObjectBinaryData)))
+            {
+                if (string.IsNullOrEmpty(openXmlEmbeddedObject.OleImageBinaryData))
+                    return null;
 
-        //            if (openXmlEmbeddedObject.ObjectIsOfficeDocument)
-        //            {
-        //                var embeddedObjectPart = mainDocumentPart.AddNewPart<EmbeddedPackagePart>(openXmlEmbeddedObject.FileContentType, embeddedPackagePartId);
-        //                embeddedObjectPart.FeedData(dataStream);
-        //            }
-        //            else
-        //            {
-        //                var embeddedObjectPart = mainDocumentPart.AddNewPart<EmbeddedObjectPart>(openXmlEmbeddedObject.FileContentType, embeddedPackagePartId);
-        //                embeddedObjectPart.FeedData(dataStream);
-        //            }
+                using (var emfStream = new MemoryStream(Convert.FromBase64String(openXmlEmbeddedObject.OleImageBinaryData)))
+                {
+                    var imagePartId = GetUniqueXmlItemId();
+                    var imagePart = mainDocumentPart.AddImagePart(ImagePartType.Emf, imagePartId);
 
-        //            embeddedObject = GetEmbeddedObject(openXmlEmbeddedObject.FileType, imagePartId, openXmlEmbeddedObject.OleImageStyle, embeddedPackagePartId);
-        //        }
+                    imagePart.FeedData(emfStream);
 
-        //    }
+                    var embeddedPackagePartId = GetUniqueXmlItemId();
 
-        //    return embeddedObject;
-        //}
+                    if (openXmlEmbeddedObject.ObjectIsOfficeDocument)
+                    {
+                        var embeddedObjectPart = mainDocumentPart.AddNewPart<EmbeddedPackagePart>(openXmlEmbeddedObject.FileContentType, embeddedPackagePartId);
+                        embeddedObjectPart.FeedData(dataStream);
+                    }
+                    else
+                    {
+                        var embeddedObjectPart = mainDocumentPart.AddNewPart<EmbeddedObjectPart>(openXmlEmbeddedObject.FileContentType, embeddedPackagePartId);
+                        embeddedObjectPart.FeedData(dataStream);
+                    }
+
+                    embeddedObject = GetEmbeddedObject(openXmlEmbeddedObject.FileType, imagePartId, openXmlEmbeddedObject.OleImageStyle, embeddedPackagePartId);
+                }
+
+            }
+
+            return embeddedObject;
+        }
 
         private static string GetUniqueXmlItemId()
         {

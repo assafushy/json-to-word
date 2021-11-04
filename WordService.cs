@@ -46,9 +46,9 @@ namespace JsonToWord
                     {
                         switch (wordObject.Type)
                         {
-                            //case WordObjectType.File:
-                            //    fileService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
-                            //    break;
+                            case WordObjectType.File:
+                                _fileService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
+                                break;
                             case WordObjectType.Html:
                                 _htmlService.Insert(document, contentControl.Title, (WordHtml)wordObject);
                                 break;
@@ -58,9 +58,9 @@ namespace JsonToWord
                             case WordObjectType.Paragraph:
                                 _textService.Write(document, contentControl.Title, (WordParagraph)wordObject);
                                 break;
-                            //case WordObjectType.Table:
-                            //    tableService.Insert(document, contentControl.Title, (WordTable)wordObject);
-                            //    break;
+                            case WordObjectType.Table:
+                                _tableService.Insert(document, contentControl.Title, (WordTable)wordObject);
+                                break;
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
