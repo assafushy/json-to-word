@@ -35,7 +35,7 @@ namespace JsonToWord.Services
             var isHeaderRow = true;
             var table = new Table();
             table.AppendChild(tableProperties);
-            
+
             foreach (var documentRow in wordTable.Rows)
             {
                 var tableRow = new TableRow { RsidTableRowProperties = "00812C40" };
@@ -140,31 +140,31 @@ namespace JsonToWord.Services
                 switch (wordAttachment.Type)
                 {
                     case WordObjectType.File:
-                    {
-                        var embeddedFile = fileService.CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
+                        {
+                            var embeddedFile = fileService.CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
 
-                        var run = new Run();
-                        run.AppendChild(embeddedFile);
+                            var run = new Run();
+                            run.AppendChild(embeddedFile);
 
-                        var paragraph = new Paragraph();
-                        paragraph.AppendChild(run);
+                            var paragraph = new Paragraph();
+                            paragraph.AppendChild(run);
 
-                        tableCell.AppendChild(paragraph);
-                        break;
-                    }
+                            tableCell.AppendChild(paragraph);
+                            break;
+                        }
                     case WordObjectType.Picture:
-                    {
-                        var drawing = pictureService.CreateDrawing(document.MainDocumentPart, wordAttachment.Path);
+                        {
+                            var drawing = pictureService.CreateDrawing(document.MainDocumentPart, wordAttachment.Path);
 
-                        var run = new Run();
-                        run.AppendChild(drawing);
+                            var run = new Run();
+                            run.AppendChild(drawing);
 
-                        var paragraph = new Paragraph();
-                        paragraph.AppendChild(run);
+                            var paragraph = new Paragraph();
+                            paragraph.AppendChild(run);
 
-                        tableCell.AppendChild(paragraph);
-                        break;
-                    }
+                            tableCell.AppendChild(paragraph);
+                            break;
+                        }
                     default:
                         continue;
                 }

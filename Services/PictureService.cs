@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using JsonToWord.Models;
+using System;
+using System.IO;
 using A = DocumentFormat.OpenXml.Drawing;
 using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
@@ -14,6 +14,11 @@ namespace JsonToWord.Services
 {
     internal class PictureService
     {
+        private readonly ContentControlService _contentControlService;
+        public PictureService()
+        {
+            _contentControlService = new ContentControlService();
+        }
         internal void Insert(WordprocessingDocument document, string contentControlTitle, WordAttachment wordAttachment)
         {
             var drawing = CreateDrawing(document.MainDocumentPart, wordAttachment.Path);
@@ -24,8 +29,7 @@ namespace JsonToWord.Services
             var paragraph = new Paragraph();
             paragraph.AppendChild(run);
 
-            var contentControlService = new ContentControlService();
-            var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
+            var sdtBlock = _contentControlService.FindContentControl(document, contentControlTitle);
 
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(paragraph);

@@ -11,6 +11,11 @@ namespace JsonToWord.Services
 {
     internal class HtmlService
     {
+        private readonly ContentControlService _contentControlService;
+        public HtmlService()
+        {
+            _contentControlService = new ContentControlService();
+        }
         internal void Insert(WordprocessingDocument document, string contentControlTitle, WordHtml wordHtml)
         {
             var html = SetHtmlFormat(wordHtml.Html);
@@ -30,8 +35,7 @@ namespace JsonToWord.Services
 
             var altChunk = new AltChunk { Id = altChunkId };
             
-            var contentControlService = new ContentControlService();
-            var sdtBlock = contentControlService.FindContentControl(document, contentControlTitle);
+            var sdtBlock = _contentControlService.FindContentControl(document, contentControlTitle);
 
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(altChunk);
