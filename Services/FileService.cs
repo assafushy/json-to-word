@@ -13,13 +13,13 @@ namespace JsonToWord.Services
         internal void Insert(WordprocessingDocument document, string contentControlTitle, WordAttachment wordAttachment)
         {
             var embeddedFile = CreateEmbeddedObject(document.MainDocumentPart, wordAttachment.Path, true);
-            
+
             var run = new Run();
             run.AppendChild(embeddedFile);
 
             var paragraph = new Paragraph();
             paragraph.AppendChild(run);
-            
+
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(paragraph);
 
@@ -34,6 +34,7 @@ namespace JsonToWord.Services
 
             var fileInfo = new FileInfo(filePath);
             var openXmlEmbeddedObject = new OpenXmlEmbeddedObject(fileInfo, displayAsIcon);
+
 
             if (string.IsNullOrEmpty(openXmlEmbeddedObject.OleObjectBinaryData))
                 return null;
