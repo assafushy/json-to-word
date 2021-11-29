@@ -23,7 +23,7 @@ jobs:
         run: env
         id: env-vars
       - name: echo docker-id
-        run: echo "0.0.$GITHUB_ACTION"
+        run: echo "0.0.$GITHUB_RUN_ID"
         id: docker-id
       - name: Build and push
         uses: docker/build-push-action@v2
