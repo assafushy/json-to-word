@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: echo docker-id
-        run: echo 0.0.$GITHUB_ACTION
+        run: echo "0.0.$GITHUB_ACTION"
         id: docker-id
       - name: Build and push
         uses: docker/build-push-action@v2
