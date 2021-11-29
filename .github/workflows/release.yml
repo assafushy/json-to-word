@@ -26,7 +26,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            assafushy/json-to-word:0.0.${{{GITHUB_ACTION}}}
+            assafushy/json-to-word:0.0.${{GITHUB_ACTION}}
             assafushy/json-to-word:latest
 
       # - name: Login to GitHub Container Registry
