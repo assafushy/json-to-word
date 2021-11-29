@@ -22,13 +22,11 @@ jobs:
       - name: echo docker-id
         run: echo "0.0.$GITHUB_RUN_ID"
         id: docker-id
-      - name: Build and push
-        uses: docker/build-push-action@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
         with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
+          images: assafushy/dg-api-g
             assafushy/json-to-word:${{steps.docker-id.outputs}}
       - name: Build and push
         uses: docker/build-push-action@v2
