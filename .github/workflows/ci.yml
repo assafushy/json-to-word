@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: echo docker-id
-        run: "::set-output name=docker-tag::0.0.$GITHUB_RUN_ID"
+        run: echo "::set-output name=docker-tag::0.0.$GITHUB_RUN_ID"
         id: docker-id
       - name: Docker meta
         id: meta
