@@ -19,6 +19,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: echo env vars
+        run: env
+        id: env-vars
       - name: echo docker-id
         run: echo "0.0.$GITHUB_ACTION"
         id: docker-id
