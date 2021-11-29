@@ -29,7 +29,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            assafushy/json-to-word:${{steps.docker-id.outputs}}
+            assafushy/json-to-word:0.0.1
             assafushy/json-to-word:latest
 
       # - name: Login to GitHub Container Registry
