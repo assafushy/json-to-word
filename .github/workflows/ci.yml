@@ -29,7 +29,6 @@ jobs:
           images: assafushy/json-to-word
           tags: |
             ${{steps.docker-id.outputs.docker-tag}}
-            type=semver,pattern={{version}}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:

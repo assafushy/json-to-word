@@ -20,8 +20,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: echo docker-id
-        run: echo "0.0.$GITHUB_ACTION"
+        run: echo "::set-output name=docker-tag::0.0.$GITHUB_RUN_ID"
         id: docker-id
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: assafushy/json-to-word
+          tags: |
+            ${{steps.docker-id.outputs.docker-tag}}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -29,14 +36,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            assafushy/json-to-word:0.0.1
+            ${{ steps.meta.outputs.tags }}
             assafushy/json-to-word:latest
-
-      # - name: Login to GitHub Container Registry
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-      # ghcr.io/ assafushy/dg-content-control-generator:latest
-      # ghcr.io/ assafushy/dg-content-control-generator:{{version}}
