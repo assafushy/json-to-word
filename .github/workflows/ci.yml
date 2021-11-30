@@ -26,7 +26,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: assafushy/json-to-word:${{steps.docker-id.outputs.docker-tag}}
+          images: assafushy/json-to-word
+          tags: |
+            ${{steps.docker-id.outputs.docker-tag}}
+            type=semver,pattern={{version}}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -43,4 +46,3 @@ jobs:
       #     password: ${{ secrets.GITHUB_TOKEN }}
       # ghcr.io/ assafushy/dg-content-control-generator:latest
       # ghcr.io/ assafushy/dg-content-control-generator:{{version}}
-
