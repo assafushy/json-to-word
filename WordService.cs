@@ -20,10 +20,10 @@ namespace JsonToWord
         public WordService()
         {
             _contentControlService = new ContentControlService();
-            _fileService = new FileService(); //doesen't work due to interop
+            _fileService = new FileService();
             _htmlService = new HtmlService();
             _pictureService = new PictureService();
-            _tableService = new TableService(); //doesen't work due to interop
+            _tableService = new TableService();
             _textService = new TextService();
             _documentService = new DocumentService();
         }

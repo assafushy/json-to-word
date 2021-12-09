@@ -54,7 +54,8 @@ namespace JsonToWord.Controllers
 
                 wordModel.UploadProperties.LocalFilePath = documentPath;
 
-                AWSUploadResult<string> Response = await _aWSS3Service.UploadFileToS3BucketAsync(wordModel.UploadProperties);
+                AWSUploadResult<string> Response = await _aWSS3Service.UploadFileToMinioBucketAsync(wordModel.UploadProperties);
+
                 _aWSS3Service.CleanUp(documentPath);
 
                 if (Response.Status)

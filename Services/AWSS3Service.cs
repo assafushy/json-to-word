@@ -59,7 +59,7 @@ namespace JsonToWord.Services
                     FilePath = uploadProperties.LocalFilePath,
                     Key = filename,
                     BucketName = uploadProperties.BucketName,
-                    CannedACL = S3CannedACL.PublicReadWrite,
+                    CannedACL = S3CannedACL.PublicReadWrite
                 };
 
                 RegionEndpoint region = RegionEndpoint.GetBySystemName(uploadProperties.Region);
@@ -67,14 +67,9 @@ namespace JsonToWord.Services
                 {
                     await util.UploadAsync(transferUtilityRequest);
                 }
-                var fileUrl = GenerateAwsFileUrl(uploadProperties.BucketName, filename, uploadProperties.Region).Data;
-
+                var fileUrl = GenerateAwsFileUrl(uploadProperties.BucketName, filename, uploadProperties.Region);
                 _log.Info("File uploaded to Amazon S3 bucket successfully");
-                return new AWSUploadResult<string>
-                {
-                    Status = true,
-                    Data = fileUrl
-                };
+                return fileUrl;
             }
             catch (Exception ex) when (ex is AmazonS3Exception)
             {
@@ -82,6 +77,46 @@ namespace JsonToWord.Services
                 throw;
             }
         }
+
+        public async Task<AWSUploadResult<string>> UploadFileToMinioBucketAsync(UploadProperties uploadProperties)
+        {
+            try
+            {
+            if (uploadProperties.ServiceUrl == null)
+            {
+                uploadProperties.ServiceUrl = Environment.GetEnvironmentVariable("ServiceUrl");
+            }
+            string filename = Path.GetFileName(uploadProperties.LocalFilePath);
+            var transferUtilityRequest = new TransferUtilityUploadRequest()
+            {
+                FilePath = uploadProperties.LocalFilePath,
+                Key = filename,
+                BucketName = uploadProperties.BucketName,
+                CannedACL = S3CannedACL.PublicReadWrite
+
+            };
+            RegionEndpoint region = RegionEndpoint.GetBySystemName(uploadProperties.Region);
+            var amazonConfig = new AmazonS3Config
+            {
+                AuthenticationRegion = region.SystemName, // Should match the `MINIO_REGION` environment variable.
+                ServiceURL = uploadProperties.ServiceUrl,
+                ForcePathStyle = true // MUST be true to work correctly with MinIO server
+            };
+            using (var amazonClient = new AmazonS3Client(uploadProperties.AwsAccessKeyId,uploadProperties.AwsSecretAccessKey, amazonConfig))
+            {
+                TransferUtility utility = new TransferUtility(amazonClient);
+                await utility.UploadAsync(transferUtilityRequest);
+            }
+                var fileUrl = GenerateMinioFileUrl(uploadProperties.BucketName, filename, uploadProperties.ServiceUrl);
+                return fileUrl;
+            }
+            catch (Exception ex) when (ex is AmazonS3Exception)
+            {
+                _log.Error("Something went wrong during file upload", ex);
+                throw;
+            }
+        }
+
 
         public AWSUploadResult<string> GenerateAwsFileUrl(string bucketName, string key, string region, bool useRegion = true)
         {
@@ -94,6 +129,16 @@ namespace JsonToWord.Services
             {
                 publicUrl = $"https://{bucketName}.s3.{AwsS3BaseUrl}/{key}";
             }
+            return new AWSUploadResult<string>
+            {
+                Status = true,
+                Data = publicUrl
+            };
+        }
+        public AWSUploadResult<string> GenerateMinioFileUrl(string bucketName, string key,string minioServiceURL)
+        {
+            string publicUrl = string.Empty;
+            publicUrl = $"{minioServiceURL}/{bucketName}/{key}";
             return new AWSUploadResult<string>
             {
                 Status = true,
