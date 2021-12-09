@@ -84,7 +84,7 @@ namespace JsonToWord.Services
             {
             if (uploadProperties.ServiceUrl == null)
             {
-                uploadProperties.ServiceUrl = Environment.GetEnvironmentVariable("ServiceUrl");
+                uploadProperties.ServiceUrl = Environment.GetEnvironmentVariable("MinioUrl");
             }
             string filename = Path.GetFileName(uploadProperties.LocalFilePath);
             var transferUtilityRequest = new TransferUtilityUploadRequest()
