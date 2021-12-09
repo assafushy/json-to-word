@@ -8,14 +8,6 @@
         public string AwsAccessKeyId { get; set; }
         public string AwsSecretAccessKey { get; set; }
         public string Region { get; set; }
-
-
-        public UploadProperties(string BucketName, string LocalFilePath, string fileName)
-        {
-            this.BucketName = BucketName;
-            this.LocalFilePath = LocalFilePath;
-            this.FileName = fileName;
-        }
-
+        public string ServiceUrl { get; set; }
     }
 }
