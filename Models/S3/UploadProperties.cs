@@ -3,6 +3,7 @@
     public class UploadProperties
     {
         public string BucketName { get; set; }
+        public string SubDirectoryInBucket { get; set; }
         public string FileName { get; set; }
         public string LocalFilePath { get; set; }
         public string AwsAccessKeyId { get; set; }

@@ -8,6 +8,8 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Amazon;
+using Amazon.S3.Util;
+using Amazon.S3.Model;
 
 namespace JsonToWord.Services
 {
@@ -61,7 +63,6 @@ namespace JsonToWord.Services
                     BucketName = uploadProperties.BucketName,
                     CannedACL = S3CannedACL.PublicReadWrite
                 };
-
                 RegionEndpoint region = RegionEndpoint.GetBySystemName(uploadProperties.Region);
                 using (var util = new TransferUtility(uploadProperties.AwsAccessKeyId, uploadProperties.AwsSecretAccessKey, region))
                 {
@@ -82,32 +83,51 @@ namespace JsonToWord.Services
         {
             try
             {
-            if (uploadProperties.ServiceUrl == null)
-            {
-                uploadProperties.ServiceUrl = Environment.GetEnvironmentVariable("MinioUrl");
-            }
-            string filename = Path.GetFileName(uploadProperties.LocalFilePath);
-            var transferUtilityRequest = new TransferUtilityUploadRequest()
-            {
-                FilePath = uploadProperties.LocalFilePath,
-                Key = filename,
-                BucketName = uploadProperties.BucketName,
-                CannedACL = S3CannedACL.PublicReadWrite
+                string FullBucketPath;
 
-            };
-            RegionEndpoint region = RegionEndpoint.GetBySystemName(uploadProperties.Region);
-            var amazonConfig = new AmazonS3Config
-            {
-                AuthenticationRegion = region.SystemName, // Should match the `MINIO_REGION` environment variable.
-                ServiceURL = uploadProperties.ServiceUrl,
-                ForcePathStyle = true // MUST be true to work correctly with MinIO server
-            };
-            using (var amazonClient = new AmazonS3Client(uploadProperties.AwsAccessKeyId,uploadProperties.AwsSecretAccessKey, amazonConfig))
-            {
-                TransferUtility utility = new TransferUtility(amazonClient);
-                await utility.UploadAsync(transferUtilityRequest);
-            }
-                var fileUrl = GenerateMinioFileUrl(uploadProperties.BucketName, filename, uploadProperties.ServiceUrl);
+                if (string.IsNullOrWhiteSpace(uploadProperties.ServiceUrl))
+                {
+                    uploadProperties.ServiceUrl = Environment.GetEnvironmentVariable("MinioUrl");
+                }
+                if (string.IsNullOrWhiteSpace(uploadProperties.SubDirectoryInBucket))
+                {
+                    FullBucketPath = uploadProperties.BucketName;
+                }
+                else
+                {
+                    FullBucketPath = $"{uploadProperties.BucketName}/{uploadProperties.SubDirectoryInBucket}";
+                }
+                string filename = Path.GetFileName(uploadProperties.LocalFilePath);
+                var transferUtilityRequest = new TransferUtilityUploadRequest()
+                {
+                    FilePath = uploadProperties.LocalFilePath,
+                    Key = filename,
+                    BucketName = FullBucketPath
+                };
+                RegionEndpoint region = RegionEndpoint.GetBySystemName(uploadProperties.Region);
+                var amazonConfig = new AmazonS3Config
+                {
+                    AuthenticationRegion = region.SystemName,
+                    ServiceURL = uploadProperties.ServiceUrl,
+                    ForcePathStyle = true
+                };
+                using (var amazonClient = new AmazonS3Client(uploadProperties.AwsAccessKeyId, uploadProperties.AwsSecretAccessKey, amazonConfig))
+                {
+                    
+                    var bucketExsists = await AmazonS3Util.DoesS3BucketExistV2Async(amazonClient, uploadProperties.BucketName);
+                    if (!bucketExsists)
+                    {
+                        var putBucketRequest = new PutBucketRequest
+                        {
+                            BucketName = uploadProperties.BucketName,
+                            UseClientRegion = true
+                        };
+                        await amazonClient.PutBucketAsync(putBucketRequest);
+                    }
+                    TransferUtility utility = new TransferUtility(amazonClient);
+                    await utility.UploadAsync(transferUtilityRequest);
+                }
+                var fileUrl = GenerateMinioFileUrl(FullBucketPath, filename, uploadProperties.ServiceUrl);
                 return fileUrl;
             }
             catch (Exception ex) when (ex is AmazonS3Exception)
@@ -135,7 +155,7 @@ namespace JsonToWord.Services
                 Data = publicUrl
             };
         }
-        public AWSUploadResult<string> GenerateMinioFileUrl(string bucketName, string key,string minioServiceURL)
+        public AWSUploadResult<string> GenerateMinioFileUrl(string bucketName, string key, string minioServiceURL)
         {
             string publicUrl = string.Empty;
             publicUrl = $"{minioServiceURL}/{bucketName}/{key}";
