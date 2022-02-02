@@ -85,10 +85,6 @@ namespace JsonToWord.Services
             {
                 string FullBucketPath;
 
-                if (string.IsNullOrWhiteSpace(uploadProperties.ServiceUrl))
-                {
-                    uploadProperties.ServiceUrl = Environment.GetEnvironmentVariable("MinioUrl");
-                }
                 if (string.IsNullOrWhiteSpace(uploadProperties.SubDirectoryInBucket))
                 {
                     FullBucketPath = uploadProperties.BucketName;
