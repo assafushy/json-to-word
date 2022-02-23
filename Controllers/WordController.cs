@@ -67,17 +67,17 @@ namespace JsonToWord.Controllers
                 var documentPath = _wordService.Create(wordModel);
                 log.Info("Created word document");
 
-                //_aWSS3Service.CleanUp(fullpath);
+                _aWSS3Service.CleanUp(fullpath);
 
                 wordModel.UploadProperties.LocalFilePath = documentPath;
 
                 AWSUploadResult<string> Response = await _aWSS3Service.UploadFileToMinioBucketAsync(wordModel.UploadProperties);
 
-               // _aWSS3Service.CleanUp(documentPath);
+                _aWSS3Service.CleanUp(documentPath);
 
                 foreach (var item in attachmentPaths)
                 {
-                    // _aWSS3Service.CleanUp(item);
+                     _aWSS3Service.CleanUp(item);
                 }
 
                 if (Response.Status)
