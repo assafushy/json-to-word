@@ -47,15 +47,6 @@ namespace JsonToWord.Controllers
                 string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath, wordModel.UploadProperties.FileName);
                 wordModel.LocalPath = fullpath;
                 log.Info("Initilized word model object");
-                if (wordModel.AttachmentsPath != null)
-                {
-                    foreach (var item in wordModel.AttachmentsPath)
-                    {
-                        string[] substrings = item.ToString().Split("/");
-                        var fileName = substrings[substrings.Length - 1].Split(".")[0];
-                        attachmentPaths.Add(_aWSS3Service.DownloadFileFromS3BucketAsync(item, fileName));
-                    }
-                }
                 if (wordModel.Attachments != null)
                 {
                     foreach (var item in wordModel.Attachments)
