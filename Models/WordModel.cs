@@ -8,6 +8,7 @@ namespace JsonToWord.Models
     {
         public UploadProperties UploadProperties { get; set; }
         public Uri TemplatePath { get; set; }
+        public AttachmentsData[] Attachments { get; set; }
         public List<WordContentControl> ContentControls { get; set; }
         public string LocalPath { get; set; }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -19,8 +20,8 @@ namespace JsonToWord.Controllers
         private readonly IAWSS3Service _aWSS3Service;
         private readonly IWordService _wordService;
 
-        public WordController(IAWSS3Service aWSS3Service,IWordService wordService)
-        { 
+        public WordController(IAWSS3Service aWSS3Service, IWordService wordService)
+        {
             _aWSS3Service = aWSS3Service;
             _wordService = wordService;
         }
@@ -40,12 +41,19 @@ namespace JsonToWord.Controllers
             try
             {
                 var settings = new JsonSerializerSettings();
+                var attachmentPaths = new List<String>();
                 settings.Converters.Add(new WordObjectConverter());
                 WordModel wordModel = JsonConvert.DeserializeObject<WordModel>(json.ToString(), settings);
-                string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath,wordModel.UploadProperties.FileName);
+                string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath, wordModel.UploadProperties.FileName);
                 wordModel.LocalPath = fullpath;
                 log.Info("Initilized word model object");
-
+                if (wordModel.Attachments != null)
+                {
+                    foreach (var item in wordModel.Attachments)
+                    {
+                        attachmentPaths.Add(_aWSS3Service.DownloadFileFromS3BucketAsync(item.AttachmentPath, item.FileName));
+                    }
+                }
                 //var wordService = new WordService();
                 var documentPath = _wordService.Create(wordModel);
                 log.Info("Created word document");
@@ -57,6 +65,11 @@ namespace JsonToWord.Controllers
                 AWSUploadResult<string> Response = await _aWSS3Service.UploadFileToMinioBucketAsync(wordModel.UploadProperties);
 
                 _aWSS3Service.CleanUp(documentPath);
+
+                foreach (var item in attachmentPaths)
+                {
+                     _aWSS3Service.CleanUp(item);
+                }
 
                 if (Response.Status)
                 {

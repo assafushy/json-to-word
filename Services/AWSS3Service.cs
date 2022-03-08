@@ -21,7 +21,7 @@ namespace JsonToWord.Services
         public AWSS3Service()
         {
             _log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            localPath = "~/TempFiles/";
+            localPath = "TempFiles/";
             AwsS3BaseUrl = "amazonaws.com";
         }
         public string DownloadFileFromS3BucketAsync(Uri webPath, string filename)
