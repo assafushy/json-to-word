@@ -47,11 +47,11 @@ namespace JsonToWord.Controllers
                 string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath, wordModel.UploadProperties.FileName);
                 wordModel.LocalPath = fullpath;
                 log.Info("Initilized word model object");
-                if (wordModel.Attachments != null)
+                if (wordModel.MinioAttachmentData != null)
                 {
-                    foreach (var item in wordModel.Attachments)
+                    foreach (var item in wordModel.MinioAttachmentData)
                     {
-                        attachmentPaths.Add(_aWSS3Service.DownloadFileFromS3BucketAsync(item.AttachmentPath, item.FileName));
+                        attachmentPaths.Add(_aWSS3Service.DownloadFileFromS3BucketAsync(item.attachmentMinioPath, item.minioFileName));
                     }
                 }
                 //var wordService = new WordService();

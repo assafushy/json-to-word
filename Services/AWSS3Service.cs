@@ -30,8 +30,25 @@ namespace JsonToWord.Services
             {
                 Directory.CreateDirectory(localPath);
             }
-            string ext = Path.GetExtension(webPath.AbsoluteUri);
-            string fullPath = localPath + filename + ext;
+            string webExt = Path.GetExtension(webPath.AbsoluteUri);
+            string fileExt = Path.GetExtension(filename);
+            string fullPath;
+            if (string.IsNullOrWhiteSpace(fileExt))
+            {
+            fullPath = localPath + filename + webExt;
+            }
+            else
+            {
+                if (fileExt == webExt)
+                {
+                fullPath = localPath + filename;
+                }
+                else
+                {
+                    fullPath = "";
+                    throw new Exception("file extensions dont match!!!!");
+                }
+            }
             try
             {
                 using (var client = new WebClient())
