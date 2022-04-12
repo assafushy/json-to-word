@@ -7,7 +7,7 @@ namespace JsonToWord.Models
 {
     public class AttachmentsData
     {
-        public Uri AttachmentPath { get; set; }
-        public String FileName { get; set; }
+        public Uri attachmentMinioPath { get; set; }
+        public String minioFileName { get; set; }
     }
 }

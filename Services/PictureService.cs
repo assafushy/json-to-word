@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using JsonToWord.Models;
+using SixLabors.ImageSharp;
 using System;
 using System.IO;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -108,8 +109,7 @@ namespace JsonToWord.Services
         {
             int width;
             int height;
-
-            using (var bmp = new System.Drawing.Bitmap(localPath))
+            using (var bmp = Image.Load(localPath))
             {
                 width = bmp.Width;
                 height = bmp.Height;
