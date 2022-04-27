@@ -30,11 +30,18 @@ namespace JsonToWord.Services
 
                     if (wordRun.Uri != null)
                     {
+                        try
+                        {
                         var id = HyperlinkService.AddHyperlinkRelationship(document.MainDocumentPart, new Uri(wordRun.Uri));
                         var hyperlink = HyperlinkService.CreateHyperlink(id);
                         hyperlink.AppendChild(run);
 
                         paragraph.AppendChild(hyperlink);
+                        }
+                        catch (UriFormatException e)
+                        {
+                            Console.WriteLine(wordRun.Uri+ "is an invalid uri \n" + e.Message);
+                        }
                     }
                     else
                     {
