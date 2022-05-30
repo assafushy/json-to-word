@@ -56,6 +56,7 @@ namespace JsonToWord.Controllers
                             string contentControlJson = reader.ReadToEnd();
                             wordModel.ContentControls.Add(JsonConvert.DeserializeObject<WordContentControl>(contentControlJson, settings));
                         }
+                        _aWSS3Service.CleanUp(contentControlPath);
                     }
                 }
                 string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath, wordModel.UploadProperties.FileName);
