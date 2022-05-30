@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -44,6 +45,19 @@ namespace JsonToWord.Controllers
                 var attachmentPaths = new List<String>();
                 settings.Converters.Add(new WordObjectConverter());
                 WordModel wordModel = JsonConvert.DeserializeObject<WordModel>(json.ToString(), settings);
+                if (wordModel.JsonDataList != null)
+                {
+                    wordModel.ContentControls = new List<WordContentControl>();
+                    foreach (var jsonData in wordModel.JsonDataList)
+                    {
+                        var contentControlPath = _aWSS3Service.DownloadFileFromS3BucketAsync(jsonData.JsonPath, jsonData.JsonName);
+                        using (StreamReader reader = new StreamReader(contentControlPath))
+                        {
+                            string contentControlJson = reader.ReadToEnd();
+                            wordModel.ContentControls.Add(JsonConvert.DeserializeObject<WordContentControl>(contentControlJson, settings));
+                        }
+                    }
+                }
                 string fullpath = _aWSS3Service.DownloadFileFromS3BucketAsync(wordModel.TemplatePath, wordModel.UploadProperties.FileName);
                 wordModel.LocalPath = fullpath;
                 log.Info("Initilized word model object");
@@ -54,7 +68,6 @@ namespace JsonToWord.Controllers
                         attachmentPaths.Add(_aWSS3Service.DownloadFileFromS3BucketAsync(item.attachmentMinioPath, item.minioFileName));
                     }
                 }
-                //var wordService = new WordService();
                 var documentPath = _wordService.Create(wordModel);
                 log.Info("Created word document");
 
@@ -68,7 +81,7 @@ namespace JsonToWord.Controllers
 
                 foreach (var item in attachmentPaths)
                 {
-                     _aWSS3Service.CleanUp(item);
+                    _aWSS3Service.CleanUp(item);
                 }
 
                 if (Response.Status)

@@ -39,15 +39,7 @@ namespace JsonToWord.Services
             }
             else
             {
-                if (fileExt == webExt)
-                {
                 fullPath = localPath + filename;
-                }
-                else
-                {
-                    fullPath = "";
-                    throw new Exception("file extensions dont match!!!!");
-                }
             }
             try
             {
