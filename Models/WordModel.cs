@@ -11,6 +11,6 @@ namespace JsonToWord.Models
         public AttachmentsData[] MinioAttachmentData { get; set; }
         public List<WordContentControl> ContentControls { get; set; }
         public string LocalPath { get; set; }
-
+        public List<JsonData> JsonDataList { get; set; }
     }
 }
