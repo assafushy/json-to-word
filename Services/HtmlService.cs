@@ -45,6 +45,7 @@ namespace JsonToWord.Services
 
         internal string CreateHtmlWordDocument(string html)
         {
+            log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             var tempHtmlDirectory = Path.Combine(Path.GetTempPath(), "MicrosoftWordOpenXml", Guid.NewGuid().ToString("N"));
 
             if (!Directory.Exists(tempHtmlDirectory))
@@ -63,7 +64,15 @@ namespace JsonToWord.Services
                 }
 
                 var converter = new HtmlConverter(mainPart);
-                converter.ParseHtml(html);
+                try
+                {
+                    converter.ParseHtml(html);
+                }
+                catch(Exception ex)
+                {
+                    log.Error("DocGen ran into an issue parsing the html due to :" , ex);
+                    converter.ParseHtml("<p style='color: red'><b>DocGen ran into an issue parsing the html due to :" + ex.Message +"<b></p>");
+                }
             }
 
             return tempHtmlFile;
