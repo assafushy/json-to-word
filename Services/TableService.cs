@@ -25,6 +25,8 @@ namespace JsonToWord.Services
 
         private Table CreateTable(WordprocessingDocument document, WordTable wordTable)
         {
+            wordTable.RepeatHeaderRow = true;  
+
             var tableBorders = CreateTableBorders();
             var tableWidth = new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct };
 

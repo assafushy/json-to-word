@@ -17,7 +17,7 @@
         public WordRun()
         {
             Font = "Arial";
-            Size = 9;
+            Size = 12;
         }
     }
 }

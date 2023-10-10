@@ -19,7 +19,9 @@ namespace JsonToWord.Services
         internal void Insert(WordprocessingDocument document, string contentControlTitle, WordHtml wordHtml)
         {
             var html = SetHtmlFormat(wordHtml.Html);
+            
             html = RemoveWordHeading(html);
+
             html = FixBullets(html);
 
             var tempHtmlFile = CreateHtmlWordDocument(html);
@@ -96,7 +98,7 @@ namespace JsonToWord.Services
         private string SetHtmlFormat(string html)
         {
             if (!html.ToLower().StartsWith("<html>"))
-                return $"<html><body>{html}</body></html>";
+                return $"<html style=\"font-family: Arial, sans-serif; font-size: 12pt;\"><body>{html}</body></html>";
 
             return html;
         }
