@@ -28,6 +28,7 @@ namespace JsonToWord.Services
                 {
                     var run = _runService.CreateRun(wordRun);
                     Console.WriteLine("---------wordRun1-------" + wordRun);
+                    Console.WriteLine("---------wordRun1Text-------" + wordRun.Text);
 
                     if (wordRun.Uri != null)
                     {
@@ -38,7 +39,7 @@ namespace JsonToWord.Services
                         hyperlink.AppendChild(run);
 
                         Console.WriteLine("---------wordRun-------" + wordRun);
-                        Console.WriteLine("---------wordRun-------" + wordRun.text);
+                        Console.WriteLine("---------wordRun2Text-------" + wordRun.Text);
 
                         paragraph.AppendChild(hyperlink);
                         }
@@ -51,7 +52,7 @@ namespace JsonToWord.Services
                     else
                     {
                         Console.WriteLine("---------wordRun2-------" + wordRun);
-                        Console.WriteLine("---------wordRun2-------" + wordRun.text);
+                        Console.WriteLine("---------wordRunText2-------" + wordRun.Text);
                         paragraph.AppendChild(run);
 
                     }
