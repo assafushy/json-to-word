@@ -59,7 +59,6 @@ namespace JsonToWord.Services
 
                 foreach (var cell in documentRow.Cells)
                 {
-                    Console.WriteLine(" documentRow" + documentRow.Cells);
 
                     var tableCellBorders = CreateTableCellBorders();
                     var tableCellWidth = new TableCellWidth { Width = cell.Width, Type = TableWidthUnitValues.Dxa };
@@ -113,17 +112,14 @@ namespace JsonToWord.Services
 
             if (string.IsNullOrEmpty(html.Html))
             {
-                Console.WriteLine(" html" + html);
 
                 var paragraph = new Paragraph();
                 tableCell.AppendChild(paragraph);
-                Console.WriteLine(" paragraph" + paragraph)
 
                 return tableCell;
             }
 
             var htmlService = new HtmlService();
-            Console.WriteLine(" html.Html" + html.Html)
 
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
 
