@@ -32,10 +32,11 @@ namespace JsonToWord.Services
                     {
                         try
                         {
-                        console.WriteLine("wordRun" + wordRun)
                         var id = HyperlinkService.AddHyperlinkRelationship(document.MainDocumentPart, new Uri(wordRun.Uri));
                         var hyperlink = HyperlinkService.CreateHyperlink(id);
                         hyperlink.AppendChild(run);
+                        console.WriteLine("wordRun" + wordRun)
+
 
                         paragraph.AppendChild(hyperlink);
                         }
