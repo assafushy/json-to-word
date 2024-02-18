@@ -123,7 +123,7 @@ namespace JsonToWord.Services
             }
 
             var htmlService = new HtmlService();
-            Console.WriteLine(" html.Html)" + html.Html))
+            Console.WriteLine(" html.Html" + html.Html)
 
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
 
