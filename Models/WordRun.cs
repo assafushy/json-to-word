@@ -4,7 +4,7 @@
     {
         public WordAttachment Attachment { get; set; }
         public string Font { get; set; }
-        public bool InsertLineBreak { get; private set; } = false;
+        public bool InsertLineBreak { get; set; }
         public bool InsertSpace { get; set; }
         public bool Bold { get; set; }
         public bool Italic { get; set; }
@@ -19,7 +19,6 @@
             Font = "Arial";
             Size = 12;
             InsertLineBreak = false; // Set to false by default
-            
 
         }
     }
