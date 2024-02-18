@@ -33,7 +33,6 @@ namespace JsonToWord.Services
                         try
                         {
                         console.WriteLine("wordRun" + wordRun)
-                        console.WriteLine("wordRun.text)" + wordRun.text)
                         var id = HyperlinkService.AddHyperlinkRelationship(document.MainDocumentPart, new Uri(wordRun.Uri));
                         var hyperlink = HyperlinkService.CreateHyperlink(id);
                         hyperlink.AppendChild(run);
@@ -48,9 +47,9 @@ namespace JsonToWord.Services
                     }
                     else
                     {
+              
                         paragraph.AppendChild(run);
-                        console.WriteLine("wordRun" + wordRun)
-                        console.WriteLine("wordRun.text)" + wordRun.text)
+
                     }
                 }
             }
