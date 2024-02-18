@@ -33,6 +33,7 @@ namespace JsonToWord.Services
             {
                 try
                 {
+                    Console.WriteLine("test3");
                     System.Drawing.Color color = System.Drawing.Color.FromName(wordRun.FontColor);
                     string colorHex = color.R.ToString("X2") + color.G.ToString("X2") + color.B.ToString("X2");
                     Color wordColor = new Color() { Val = colorHex };

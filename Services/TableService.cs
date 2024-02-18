@@ -205,6 +205,7 @@ namespace JsonToWord.Services
                             }
                             catch (UriFormatException e)
                             {
+                                Console.WriteLine("test4");
                                 Console.WriteLine(wordRun.Uri + " is an invalid uri \n" + e.Message);
                                 paragraph.AppendChild(run);
                             }
