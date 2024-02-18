@@ -19,8 +19,11 @@ namespace JsonToWord.Services
 
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(table);
+            Console.WriteLine(" table" + table);
 
             sdtBlock.AppendChild(sdtContentBlock);
+            Console.WriteLine(" sdtContentBlock" + sdtContentBlock);
+
         }
 
         private Table CreateTable(WordprocessingDocument document, WordTable wordTable)
@@ -56,6 +59,8 @@ namespace JsonToWord.Services
 
                 foreach (var cell in documentRow.Cells)
                 {
+                    Console.WriteLine(" documentRow" + documentRow.Cells);
+
                     var tableCellBorders = CreateTableCellBorders();
                     var tableCellWidth = new TableCellWidth { Width = cell.Width, Type = TableWidthUnitValues.Dxa };
 
@@ -87,6 +92,8 @@ namespace JsonToWord.Services
                     tableCell.AppendChild(tableCellProperties);
 
                     tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
+                    Console.WriteLine(" cell.Paragraphs" + cell.Paragraphs);
+
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
                     tableCell = AppendHtml(tableCell, cell.Html, document);
 
@@ -106,13 +113,18 @@ namespace JsonToWord.Services
 
             if (string.IsNullOrEmpty(html.Html))
             {
+                Console.WriteLine(" html" + html);
+
                 var paragraph = new Paragraph();
                 tableCell.AppendChild(paragraph);
+                Console.WriteLine(" paragraph" + paragraph)
 
                 return tableCell;
             }
 
             var htmlService = new HtmlService();
+            Console.WriteLine(" html.Html)" + html.Html))
+
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
@@ -205,7 +217,6 @@ namespace JsonToWord.Services
                             }
                             catch (UriFormatException e)
                             {
-                                Console.WriteLine("test4");
                                 Console.WriteLine(wordRun.Uri + " is an invalid uri \n" + e.Message);
                                 paragraph.AppendChild(run);
                             }
