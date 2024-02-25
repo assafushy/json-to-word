@@ -19,10 +19,8 @@ namespace JsonToWord.Services
 
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(table);
-            Console.WriteLine(" table" + table);
 
             sdtBlock.AppendChild(sdtContentBlock);
-            Console.WriteLine(" sdtContentBlock" + sdtContentBlock);
 
         }
 
@@ -91,7 +89,6 @@ namespace JsonToWord.Services
                     tableCell.AppendChild(tableCellProperties);
 
                     tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
-                    Console.WriteLine(" cell.Paragraphs" + cell.Paragraphs);
 
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
                     tableCell = AppendHtml(tableCell, cell.Html, document);
