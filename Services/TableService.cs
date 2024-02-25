@@ -87,10 +87,15 @@ namespace JsonToWord.Services
 
                     var tableCell = new TableCell();
                     tableCell.AppendChild(tableCellProperties);
+                    
+                    Console.WriteLine("cell.Paragraphs" + cell.Paragraphs);
 
                     tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
 
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
+
+                    Console.WriteLine("cell.Html" + cell.Html);
+
                     tableCell = AppendHtml(tableCell, cell.Html, document);
 
                     tableRow.AppendChild(tableCell);
