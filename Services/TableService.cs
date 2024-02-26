@@ -94,7 +94,6 @@ namespace JsonToWord.Services
 
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
 
-                    Console.WriteLine("cell.Html" + cell.Html);
 
                     tableCell = AppendHtml(tableCell, cell.Html, document);
 
@@ -109,6 +108,9 @@ namespace JsonToWord.Services
 
         private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
         {
+            Console.WriteLine("html.Html" + html.Html);
+            Console.WriteLine("html" + html);
+
             if (html == null)
                 return tableCell;
 
@@ -124,9 +126,11 @@ namespace JsonToWord.Services
             var htmlService = new HtmlService();
 
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
+            Console.WriteLine("tempHtmlFile" + tempHtmlFile);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
+            Console.WriteLine("chunk" + chunk);
 
             using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
             {
