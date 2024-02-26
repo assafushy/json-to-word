@@ -150,34 +150,28 @@ namespace JsonToWord.Services
 
             return res;
         }
-            private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+{
+    var body = document.MainDocumentPart.Document.Body;
+    var altChunks = body.Descendants<AltChunk>().ToList();
+
+    foreach (var altChunk in altChunks)
+    {
+        // Check for and remove any empty paragraphs immediately after the AltChunk
+        while (altChunk.NextSibling<Paragraph>() is Paragraph nextParagraph &&
+               !nextParagraph.Descendants<Text>().Any(text => !string.IsNullOrWhiteSpace(text.Text)))
         {
-            var body = document.MainDocumentPart.Document.Body;
-            var altChunks = body.Descendants<AltChunk>().ToList();
-
-            foreach (var altChunk in altChunks)
-            {
-                // Check for a paragraph immediately following the AltChunk
-                var nextParagraph = altChunk.NextSibling<Paragraph>();
-                if (nextParagraph != null)
-                {
-                    // Check if the paragraph is empty and if so, remove it
-                    if (!nextParagraph.Descendants<Run>().Any())
-                    {
-                        nextParagraph.Remove();
-                    }
-                }
-
-                // Check for a paragraph immediately preceding the AltChunk and remove if empty
-                var prevParagraph = altChunk.PreviousSibling<Paragraph>();
-                if (prevParagraph != null)
-                {
-                    if (!prevParagraph.Descendants<Run>().Any())
-                    {
-                        prevParagraph.Remove();
-                    }
-                }
-            }
+            nextParagraph.Remove();
         }
+
+        // Check for and remove any empty paragraphs immediately before the AltChunk
+        while (altChunk.PreviousSibling<Paragraph>() is Paragraph prevParagraph &&
+               !prevParagraph.Descendants<Text>().Any(text => !string.IsNullOrWhiteSpace(text.Text)))
+        {
+            prevParagraph.Remove();
+        }
+    }
+}
+
     }
 }
