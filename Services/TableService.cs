@@ -121,9 +121,10 @@ namespace JsonToWord.Services
             }
 
             var htmlService = new HtmlService();
+            Console.WriteLine("html.Html" + html.Html);
 
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
-            Console.WriteLine("html.Html" + html.Html);
+            Console.WriteLine("tempHtmlFile" + tempHtmlFile);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
