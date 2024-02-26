@@ -124,7 +124,7 @@ namespace JsonToWord.Services
             var styledHtml = WrapHtmlWithStyle(html.Html);
 
             var htmlService = new HtmlService();
-            Console.WriteLine("html.Html" + html.Html);
+            Console.WriteLine("styledHtml" + styledHtml);
 
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
             Console.WriteLine("tempHtmlFile" + tempHtmlFile);
