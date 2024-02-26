@@ -109,39 +109,38 @@ namespace JsonToWord.Services
 
         private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
         {
-            if (html == null || string.IsNullOrEmpty(html.Html))
+
+            if (html == null)
+                return tableCell;
+
+            if (string.IsNullOrEmpty(html.Html))
             {
+
                 var paragraph = new Paragraph();
                 tableCell.AppendChild(paragraph);
+
                 return tableCell;
             }
-        
             var styledHtml = WrapHtmlWithStyle(html.Html);
-        
+
             var htmlService = new HtmlService();
-            Console.WriteLine("Styled HTML: " + styledHtml);
-        
-            // Create a temporary Word document from the styled HTML
-            var tempHtmlFile = htmlService.CreateHtmlWordDocument(styledHtml);
-        
-            // Now use this temporary file to create an AltChunk
+            Console.WriteLine("styledHtml" + styledHtml);
+
+            var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
+
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
-        
+
             using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
             {
                 chunk.FeedData(fileStream);
             }
-        
+
             var altChunk = new AltChunk { Id = altChunkId };
             tableCell.AppendChild(altChunk);
-        
-            // Delete the temporary file after use
-            File.Delete(tempHtmlFile);
-        
+
             return tableCell;
         }
-
         private string WrapHtmlWithStyle(string originalHtml)
         {
             // This method wraps the HTML content with additional HTML tags and styles
@@ -275,35 +274,34 @@ namespace JsonToWord.Services
 
             return tableBorders;
         }
-private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
-{
-    var body = document.MainDocumentPart.Document.Body;
-    var altChunks = body.Descendants<AltChunk>().ToList();
-
-    foreach (var altChunk in altChunks)
-    {
-        var nextSibling = altChunk.NextSibling<Paragraph>();
-        while (nextSibling != null)
+         private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
         {
-            // Check if the paragraph contains only whitespace or no Run elements
-            if (!nextSibling.Elements<Run>().Any() || 
-                nextSibling.InnerText.Trim().Length == 0)
+            var body = document.MainDocumentPart.Document.Body;
+            var altChunks = body.Descendants<AltChunk>().ToList();
+
+            foreach (var altChunk in altChunks)
             {
-                var toBeRemoved = nextSibling;
-                nextSibling = toBeRemoved.NextSibling<Paragraph>();
-                toBeRemoved.Remove();
-            }
-            else
-            {
-                // If the paragraph contains more than whitespace, stop the cleanup.
-                break;
+                // Check for a paragraph immediately following the AltChunk
+                var nextParagraph = altChunk.NextSibling<Paragraph>();
+                if (nextParagraph != null)
+                {
+                    // Check if the paragraph is empty and if so, remove it
+                    if (!nextParagraph.Descendants<Run>().Any())
+                    {
+                        nextParagraph.Remove();
+                    }
+                }
+
+                // Check for a paragraph immediately preceding the AltChunk and remove if empty
+                var prevParagraph = altChunk.PreviousSibling<Paragraph>();
+                if (prevParagraph != null)
+                {
+                    if (!prevParagraph.Descendants<Run>().Any())
+                    {
+                        prevParagraph.Remove();
+                    }
+                }
             }
         }
-    }
-
-    document.MainDocumentPart.Document.Save();
-}
-
-
     }
 }
