@@ -107,40 +107,37 @@ namespace JsonToWord.Services
             return table;
         }
 
-        private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
-        {
+private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
+{
+    if (html == null || string.IsNullOrEmpty(html.Html))
+    {
+        var paragraph = new Paragraph();
+        tableCell.AppendChild(paragraph);
+        return tableCell;
+    }
 
-            if (html == null)
-                return tableCell;
+    var styledHtml = WrapHtmlWithStyle(html.Html);
+    var htmlService = new HtmlService();
+    var tempHtmlFile = htmlService.CreateHtmlWordDocument(styledHtml);
 
-            if (string.IsNullOrEmpty(html.Html))
-            {
+    var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
+    var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Html, altChunkId);
 
-                var paragraph = new Paragraph();
-                tableCell.AppendChild(paragraph);
+    using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
+    {
+        chunk.FeedData(fileStream);
+    }
 
-                return tableCell;
-            }
-            var styledHtml = WrapHtmlWithStyle(html.Html);
+    File.Delete(tempHtmlFile); // Delete the temporary file immediately after use
 
-            var htmlService = new HtmlService();
-            Console.WriteLine("styledHtml" + styledHtml);
+    var altChunk = new AltChunk { Id = altChunkId };
+    tableCell.AppendChild(altChunk);
 
-            var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
+    // After appending the altChunk, remove any extra paragraphs that may have been added
+    RemoveExtraParagraphsAfterAltChunk(document);
 
-            var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
-            var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
-
-            using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
-            {
-                chunk.FeedData(fileStream);
-            }
-
-            var altChunk = new AltChunk { Id = altChunkId };
-            tableCell.AppendChild(altChunk);
-
-            return tableCell;
-        }
+    return tableCell;
+}
         private string WrapHtmlWithStyle(string originalHtml)
         {
             // This method wraps the HTML content with additional HTML tags and styles
@@ -274,34 +271,28 @@ namespace JsonToWord.Services
 
             return tableBorders;
         }
-         private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+    private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+{
+    var paragraphsToRemove = new List<Paragraph>();
+
+    // Check for paragraphs following the AltChunk and mark them for removal if they are empty
+    foreach (var altChunk in document.MainDocumentPart.Document.Body.Elements<AltChunk>())
+    {
+        var nextParagraph = altChunk.NextSibling<Paragraph>();
+        while (nextParagraph != null && string.IsNullOrWhiteSpace(nextParagraph.InnerText))
         {
-            var body = document.MainDocumentPart.Document.Body;
-            var altChunks = body.Descendants<AltChunk>().ToList();
-
-            foreach (var altChunk in altChunks)
-            {
-                // Check for a paragraph immediately following the AltChunk
-                var nextParagraph = altChunk.NextSibling<Paragraph>();
-                if (nextParagraph != null)
-                {
-                    // Check if the paragraph is empty and if so, remove it
-                    if (!nextParagraph.Descendants<Run>().Any())
-                    {
-                        nextParagraph.Remove();
-                    }
-                }
-
-                // Check for a paragraph immediately preceding the AltChunk and remove if empty
-                var prevParagraph = altChunk.PreviousSibling<Paragraph>();
-                if (prevParagraph != null)
-                {
-                    if (!prevParagraph.Descendants<Run>().Any())
-                    {
-                        prevParagraph.Remove();
-                    }
-                }
-            }
+            paragraphsToRemove.Add(nextParagraph);
+            nextParagraph = nextParagraph.NextSibling<Paragraph>();
         }
+    }
+
+    // Remove the marked paragraphs from the document
+    foreach (var paragraph in paragraphsToRemove)
+    {
+        paragraph.Remove();
+    }
+
+    document.MainDocumentPart.Document.Save();
+}
     }
 }
