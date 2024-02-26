@@ -24,7 +24,6 @@ namespace JsonToWord.Services
 
 
             html = FixBullets(html);
-            Console.WriteLine("html service:" + html);
             var tempHtmlFile = CreateHtmlWordDocument(html);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
