@@ -275,34 +275,22 @@ namespace JsonToWord.Services
 
             return tableBorders;
         }
-         private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
-        {
-            var body = document.MainDocumentPart.Document.Body;
-            var altChunks = body.Descendants<AltChunk>().ToList();
-
-            foreach (var altChunk in altChunks)
-            {
-                // Check for a paragraph immediately following the AltChunk
-                var nextParagraph = altChunk.NextSibling<Paragraph>();
-                if (nextParagraph != null)
-                {
-                    // Check if the paragraph is empty and if so, remove it
-                    if (!nextParagraph.Descendants<Run>().Any())
-                    {
-                        nextParagraph.Remove();
-                    }
-                }
-
-                // Check for a paragraph immediately preceding the AltChunk and remove if empty
-                var prevParagraph = altChunk.PreviousSibling<Paragraph>();
-                if (prevParagraph != null)
-                {
-                    if (!prevParagraph.Descendants<Run>().Any())
-                    {
-                        prevParagraph.Remove();
-                    }
-                }
-            }
-        }
+       private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+       {
+           var body = document.MainDocumentPart.Document.Body;
+           var altChunks = body.Descendants<AltChunk>().ToList();
+       
+           foreach (var altChunk in altChunks)
+           {
+               // Remove any empty paragraphs following the AltChunk.
+               while (altChunk.NextSibling() is Paragraph nextParagraph && !nextParagraph.HasChild<Run>())
+               {
+                   nextParagraph.Remove();
+               }
+           }
+       
+           // Save the changes to the document.
+           document.MainDocumentPart.Document.Save();
+       }
     }
 }
