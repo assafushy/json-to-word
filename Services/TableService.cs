@@ -94,6 +94,7 @@ namespace JsonToWord.Services
 
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
 
+                    Console.WriteLine("cell.Html" + cell.Html);
 
                     tableCell = AppendHtml(tableCell, cell.Html, document);
 
@@ -108,7 +109,6 @@ namespace JsonToWord.Services
 
         private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
         {
-            Console.WriteLine("html" + html);
 
             if (html == null)
                 return tableCell;
