@@ -22,6 +22,8 @@ namespace JsonToWord.Services
 
             sdtBlock.AppendChild(sdtContentBlock);
 
+            RemoveExtraParagraphsAfterAltChunk(document);
+
         }
 
         private Table CreateTable(WordprocessingDocument document, WordTable wordTable)
@@ -267,6 +269,35 @@ namespace JsonToWord.Services
             tableBorders.AppendChild(insideVerticalBorder);
 
             return tableBorders;
+        }
+         private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+        {
+            var body = document.MainDocumentPart.Document.Body;
+            var altChunks = body.Descendants<AltChunk>().ToList();
+
+            foreach (var altChunk in altChunks)
+            {
+                // Check for a paragraph immediately following the AltChunk
+                var nextParagraph = altChunk.NextSibling<Paragraph>();
+                if (nextParagraph != null)
+                {
+                    // Check if the paragraph is empty and if so, remove it
+                    if (!nextParagraph.Descendants<Run>().Any())
+                    {
+                        nextParagraph.Remove();
+                    }
+                }
+
+                // Check for a paragraph immediately preceding the AltChunk and remove if empty
+                var prevParagraph = altChunk.PreviousSibling<Paragraph>();
+                if (prevParagraph != null)
+                {
+                    if (!prevParagraph.Descendants<Run>().Any())
+                    {
+                        prevParagraph.Remove();
+                    }
+                }
+            }
         }
     }
 }
