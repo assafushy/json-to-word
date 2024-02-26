@@ -109,39 +109,39 @@ namespace JsonToWord.Services
 
         private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
         {
-
-            if (html == null)
-                return tableCell;
-
-            if (string.IsNullOrEmpty(html.Html))
+            if (html == null || string.IsNullOrEmpty(html.Html))
             {
-
                 var paragraph = new Paragraph();
                 tableCell.AppendChild(paragraph);
-
                 return tableCell;
             }
+        
             var styledHtml = WrapHtmlWithStyle(html.Html);
-
+        
             var htmlService = new HtmlService();
-            Console.WriteLine("styledHtml" + styledHtml);
-
-            var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
-            Console.WriteLine("tempHtmlFile" + tempHtmlFile);
-
+            Console.WriteLine("Styled HTML: " + styledHtml);
+        
+            // Create a temporary Word document from the styled HTML
+            var tempHtmlFile = htmlService.CreateHtmlWordDocument(styledHtml);
+        
+            // Now use this temporary file to create an AltChunk
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
-
+        
             using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
             {
                 chunk.FeedData(fileStream);
             }
-
+        
             var altChunk = new AltChunk { Id = altChunkId };
             tableCell.AppendChild(altChunk);
-
+        
+            // Delete the temporary file after use
+            File.Delete(tempHtmlFile);
+        
             return tableCell;
         }
+
         private string WrapHtmlWithStyle(string originalHtml)
         {
             // This method wraps the HTML content with additional HTML tags and styles
