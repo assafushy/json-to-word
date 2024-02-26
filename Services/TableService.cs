@@ -88,13 +88,11 @@ namespace JsonToWord.Services
                     var tableCell = new TableCell();
                     tableCell.AppendChild(tableCellProperties);
                     
-                    Console.WriteLine("cell.Paragraphs" + cell.Paragraphs);
 
                     tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
 
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
 
-                    Console.WriteLine("cell.Html" + cell.Html);
 
                     tableCell = AppendHtml(tableCell, cell.Html, document);
 
@@ -125,12 +123,9 @@ namespace JsonToWord.Services
             var htmlService = new HtmlService();
 
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
-            Console.WriteLine("tempHtmlFile" + tempHtmlFile);
-            Console.WriteLine("html.Html" + html.Html);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
-            Console.WriteLine("chunk" + chunk);
 
             using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
             {
