@@ -6,8 +6,6 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using HtmlToOpenXml;
 using JsonToWord.Models;
-using System.Linq;
-
 
 namespace JsonToWord.Services
 {
@@ -26,6 +24,7 @@ namespace JsonToWord.Services
 
 
             html = FixBullets(html);
+
             var tempHtmlFile = CreateHtmlWordDocument(html);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
@@ -45,9 +44,6 @@ namespace JsonToWord.Services
             sdtContentBlock.AppendChild(altChunk);
 
             sdtBlock.AppendChild(sdtContentBlock);
-
-            RemoveExtraParagraphsAfterAltChunk(document);
-
         }
 
         internal string CreateHtmlWordDocument(string html)
@@ -150,28 +146,5 @@ namespace JsonToWord.Services
 
             return res;
         }
-private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
-{
-    var body = document.MainDocumentPart.Document.Body;
-    var altChunks = body.Descendants<AltChunk>().ToList();
-
-    foreach (var altChunk in altChunks)
-    {
-        // Check for and remove any empty paragraphs immediately after the AltChunk
-        while (altChunk.NextSibling<Paragraph>() is Paragraph nextParagraph &&
-               !nextParagraph.Descendants<Text>().Any(text => !string.IsNullOrWhiteSpace(text.Text)))
-        {
-            nextParagraph.Remove();
-        }
-
-        // Check for and remove any empty paragraphs immediately before the AltChunk
-        while (altChunk.PreviousSibling<Paragraph>() is Paragraph prevParagraph &&
-               !prevParagraph.Descendants<Text>().Any(text => !string.IsNullOrWhiteSpace(text.Text)))
-        {
-            prevParagraph.Remove();
-        }
-    }
-}
-
     }
 }

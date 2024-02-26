@@ -124,7 +124,7 @@ namespace JsonToWord.Services
 
             var htmlService = new HtmlService();
             Console.WriteLine("html.Html" + html.Html);
-
+            var html = SetHtmlFormat(html.Html);
             var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
             Console.WriteLine("tempHtmlFile" + tempHtmlFile);
 
@@ -234,7 +234,13 @@ namespace JsonToWord.Services
 
             return tableCell;
         }
+        private string SetHtmlFormat(string html)
+        {
+            if (!html.ToLower().StartsWith("<html>"))
+                return $"<html style=\"font-family: Arial, sans-serif; font-size: 12pt;\"><body>{html}</body></html>";
 
+            return html;
+        }
         private TableCellBorders CreateTableCellBorders()
         {
             var tableCellBorders = new TableCellBorders();
