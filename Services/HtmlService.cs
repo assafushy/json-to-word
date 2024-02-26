@@ -25,23 +25,24 @@ namespace JsonToWord.Services
 
             html = FixBullets(html);
 
+            var tempHtmlFile = CreateHtmlWordDocument(html);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var mainPart = document.MainDocumentPart;
             var chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
 
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(html)))
+            using (var fileStream = File.Open(tempHtmlFile, FileMode.Open))
             {
-                chunk.FeedData(stream);
+                chunk.FeedData(fileStream);
             }
 
-            // Create the AltChunk with the id of the part
             var altChunk = new AltChunk { Id = altChunkId };
-
-            // Find the content control and add the AltChunk to it
+            
             var sdtBlock = _contentControlService.FindContentControl(document, contentControlTitle);
+
             var sdtContentBlock = new SdtContentBlock();
             sdtContentBlock.AppendChild(altChunk);
+
             sdtBlock.AppendChild(sdtContentBlock);
         }
 
