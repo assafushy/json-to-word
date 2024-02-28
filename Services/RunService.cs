@@ -23,6 +23,8 @@ namespace JsonToWord.Services
 
             SetBreak(wordRun, run);
             SetText(wordRun, run);
+            Console.WriteLine("run" + run);
+            Console.WriteLine("wordRun" + wordRun);
 
             return run;
         }
@@ -57,6 +59,7 @@ namespace JsonToWord.Services
                 return;
 
             var text = new Text { Text = wordRun.Text };
+            Console.WriteLine("text" + text);
 
             if (wordRun.InsertSpace)
                 text.Space = SpaceProcessingModeValues.Preserve;
