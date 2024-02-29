@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using JsonToWord.Models;
 using System;
+using System.Collections.Generic;  // Ensure this using directive is included for List<T>
 
 namespace JsonToWord.Services
 {
@@ -9,6 +10,8 @@ namespace JsonToWord.Services
         internal Paragraph CreateParagraph(WordParagraph wordParagraph)
         {
             var paragraph = new Paragraph();
+            var runsToRemove = new List<WordRun>(); // Declare the list here
+
             foreach (var wordRun in wordParagraph.Runs)
             {
                 if (wordRun.Text == "Test Description:")
