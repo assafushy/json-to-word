@@ -42,7 +42,7 @@ namespace JsonToWord.Services
                         catch (UriFormatException e)
                         {
                             Console.WriteLine(wordRun.Uri+ " is an invalid uri \n" + e.Message);
-                            Console.WriteLine("run text xervice" + run);
+                            Console.WriteLine("WordRun Text2: " + wordRun.Text); // This will print the text from WordRun
                             paragraph.AppendChild(run);
                         }
                     }
