@@ -11,11 +11,23 @@ namespace JsonToWord.Services
             var paragraph = new Paragraph();
             foreach (var wordRun in wordParagraph.Runs)
             {
-                Console.WriteLine("-------------Run Text----------: " + wordRun.Text);
+                if (wordRun.Text == "Test Description:")
+                {
+                    runsToRemove.Add(wordRun);
+                }
             }
+
+            foreach (var runToRemove in runsToRemove)
+            {
+                wordParagraph.Runs.Remove(runToRemove);
+            }
+            
             if (wordParagraph.HeadingLevel == 0)
                 return paragraph;
-
+            foreach (var wordRun in wordParagraph.Runs)
+            {
+                Console.WriteLine("-------------Run Text----------: " + wordRun.Text);
+            }
             var paragraphProperties = new ParagraphProperties();
             var paragraphStyleId = new ParagraphStyleId { Val = $"Heading{wordParagraph.HeadingLevel}" };
 
