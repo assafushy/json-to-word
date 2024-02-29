@@ -8,7 +8,10 @@ namespace JsonToWord.Services
         internal Paragraph CreateParagraph(WordParagraph wordParagraph)
         {
             var paragraph = new Paragraph();
-
+            foreach (var wordRun in wordParagraph.Runs)
+            {
+                Console.WriteLine("-------------Run Text----------: " + wordRun.Text);
+            }
             if (wordParagraph.HeadingLevel == 0)
                 return paragraph;
 
