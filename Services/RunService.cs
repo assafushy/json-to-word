@@ -24,7 +24,6 @@ namespace JsonToWord.Services
             SetBreak(wordRun, run);
             SetText(wordRun, run);
             Console.WriteLine("WordRun Text: " + wordRun.Text); // This will print the text from WordRun
-);
 
             return run;
         }
