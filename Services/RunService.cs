@@ -54,6 +54,8 @@ namespace JsonToWord.Services
 
         private static void SetText(WordRun wordRun, Run run)
         {
+            if (wordRun.Text == "Test Description:")
+                return;
             if (string.IsNullOrEmpty(wordRun.Text))
                 return;
 
