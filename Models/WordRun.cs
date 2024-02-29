@@ -4,7 +4,7 @@
     {
         public WordAttachment Attachment { get; set; }
         public string Font { get; set; }
-        public bool InsertLineBreak { get; set; }
+        public bool InsertLineBreak { get { return false; } } // Read-only, always false
         public bool InsertSpace { get; set; }
         public bool Bold { get; set; }
         public bool Italic { get; set; }

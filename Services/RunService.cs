@@ -49,7 +49,8 @@ namespace JsonToWord.Services
         {
             Console.WriteLine("WordRun Text: " + wordRun.Text); // This will print the text from WordRun
             Console.WriteLine("WordRun Text: " + wordRun.InsertLineBreak); // This will print the text from WordRun
-
+            if (wordRun.InsertLineBreak)
+                run.AppendChild(new Break());
         }
 
         private static void SetText(WordRun wordRun, Run run)
