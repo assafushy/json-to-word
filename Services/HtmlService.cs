@@ -24,6 +24,8 @@ namespace JsonToWord.Services
 
 
             html = FixBullets(html);
+            
+            Console.WriteLine("html" + html);
 
             var tempHtmlFile = CreateHtmlWordDocument(html);
 
