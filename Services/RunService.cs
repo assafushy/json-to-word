@@ -23,7 +23,6 @@ namespace JsonToWord.Services
 
             SetBreak(wordRun, run);
             SetText(wordRun, run);
-            Console.WriteLine("WordRun Text: " + wordRun.Text); // This will print the text from WordRun
 
             return run;
         }
@@ -48,6 +47,8 @@ namespace JsonToWord.Services
 
         private static void SetBreak(WordRun wordRun, Run run)
         {
+            Console.WriteLine("WordRun Text: " + wordRun.Text); // This will print the text from WordRun
+            Console.WriteLine("WordRun Text: " + wordRun.InsertLineBreak); // This will print the text from WordRun
             if (wordRun.InsertLineBreak)
                 run.AppendChild(new Break());
         }
