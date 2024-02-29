@@ -58,7 +58,7 @@ namespace JsonToWord.Services
                 return;
 
             var text = new Text { Text = wordRun.Text };
-    C       console.WriteLine("text value: " + text.Text);
+            Console.WriteLine("text value: " + text.Text);
 
             if (wordRun.InsertSpace)
                 text.Space = SpaceProcessingModeValues.Preserve;
