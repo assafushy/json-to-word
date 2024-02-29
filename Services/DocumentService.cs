@@ -8,18 +8,9 @@ namespace JsonToWord.Services
 {
     public class DocumentService
     {
-        public void RemoveEmptyParagraphs(WordprocessingDocument document)
-        {
-            var paragraphs = document.MainDocumentPart.Document.Body.Elements<Paragraph>().ToList();
-            foreach (var paragraph in paragraphs)
-            {
-                if (!paragraph.Elements<Run>().Any(run => run.Elements<Text>().Any(text => !string.IsNullOrWhiteSpace(text.Text))))
-                {
-                    paragraph.Remove();
-                }
-            }
-        }
-     public string CreateDocument(string templatePath)
+          public class DocumentService
+    {
+        public string CreateDocument(string templatePath)
         {
             var destinationFile = templatePath.Replace(".dot", ".doc");
             byte[] templateBytes = File.ReadAllBytes(templatePath);
@@ -32,10 +23,9 @@ namespace JsonToWord.Services
                 {
                     document.ChangeDocumentType(WordprocessingDocumentType.Document);
                     var mainPart = document.MainDocumentPart;
-                    SetLandscape(mainPart);
 
-                    // Call the method to remove empty paragraphs
-                    RemoveEmptyParagraphs(document);
+                    RemoveEmptyParagraphs(mainPart);
+                    SetLandscape(mainPart);
 
                     mainPart.Document.Save();
                 }
@@ -44,6 +34,19 @@ namespace JsonToWord.Services
             }
 
             return destinationFile;
+        }
+
+        private void RemoveEmptyParagraphs(MainDocumentPart mainPart)
+        {
+            var paragraphs = mainPart.Document.Body.Elements<Paragraph>().ToList();
+
+            foreach (var paragraph in paragraphs)
+            {
+                if (!paragraph.Elements<Run>().Any(r => r.Elements<Text>().Any(t => !string.IsNullOrEmpty(t.Text.Trim()))))
+                {
+                    paragraph.Remove();
+                }
+            }
         }
 
         public void SetLandscape(MainDocumentPart mainPart)
