@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -8,9 +7,6 @@ namespace JsonToWord.Services
 {
     public class DocumentService
     {
-          public class DocumentService
-    {
-      
         public string CreateDocument(string templatePath)
         {
             var destinationFile = templatePath.Replace(".dot", ".doc");
@@ -83,54 +79,6 @@ namespace JsonToWord.Services
             }
         }
 
-        //internal void RunMacro(string documentPath, string macroName, StreamWriter sw)
-        //{
-        //    Application wordApp = null;
-        //    Document wordDoc = null;
-        //    var missing = System.Reflection.Missing.Value;
-        //    object[] args = new object[1];
-        //    args[0] = macroName;
-        //    sw.WriteLine("before try in macro");
-        //    sw.Flush();
-        //    try
-        //    {
-        //        wordApp = new Application { Visible = false };
-        //        sw.WriteLine("befor open document " + documentPath);
-        //        sw.Flush();
-        //        wordDoc = wordApp.Documents.Open(documentPath, ReadOnly: false, Visible: false);
-        //        sw.WriteLine("after open document "+ documentPath);
-        //        sw.Flush();
-        //        wordApp.GetType().InvokeMember("Run", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod, 
-        //            null, wordApp, args);
-        //        wordDoc.Close(true, missing, missing);
-        //        wordApp.Quit(true, missing, missing);
-        //        sw.WriteLine("end of try");
-        //        sw.Flush();
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        sw.WriteLine(exception.Message);
-        //        sw.Flush();
-        //        //ToDo: write exception to log
-        //    }
-        //    finally
-        //    {
-        //        sw.WriteLine("before finaly");
-        //        sw.Flush();
-        //        if (wordDoc != null)
-        //        {
-        //            Marshal.FinalReleaseComObject(wordDoc);
-        //            wordDoc = null;
-        //        }
-
-        //        if (wordApp != null)
-        //        {
-        //            Marshal.FinalReleaseComObject(wordApp);
-        //            wordApp = null;
-        //        }
-        //        sw.WriteLine("after finaly");
-        //        sw.Flush();
-        //    }
-        //}
+        // ... other methods ...
     }
 }
