@@ -6,6 +6,8 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using HtmlToOpenXml;
 using JsonToWord.Models;
+using System.Linq;
+
 
 namespace JsonToWord.Services
 {
