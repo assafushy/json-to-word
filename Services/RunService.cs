@@ -49,8 +49,7 @@ namespace JsonToWord.Services
         {
             Console.WriteLine("WordRun Text: " + wordRun.Text); // This will print the text from WordRun
             Console.WriteLine("WordRun Text: " + wordRun.InsertLineBreak); // This will print the text from WordRun
-            if (wordRun.InsertLineBreak)
-                run.AppendChild(new Break());
+
         }
 
         private static void SetText(WordRun wordRun, Run run)
@@ -122,29 +121,6 @@ namespace JsonToWord.Services
                 runProperties.AppendChild(runFonts);
             }
         }
-    internal void PrintRun(Run run)
-    {
-        foreach (var element in run.ChildElements)
-        {
-            switch (element)
-            {
-                case Text textElement:
-                    Console.WriteLine("Text: " + textElement.Text);
-                    break;
-
-                case Break _:
-                    Console.WriteLine("Break");
-                    break;
-
-                // You can add more cases for other child element types
-                // ...
-
-                default:
-                    Console.WriteLine("Other element: " + element.GetType().Name);
-                    break;
-            }
-        }
-    }
 
         private static void AddUnderline(RunProperties runProperties)
         {
