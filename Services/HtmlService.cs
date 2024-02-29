@@ -24,7 +24,7 @@ namespace JsonToWord.Services
 
 
             html = FixBullets(html);
-            
+
             Console.WriteLine("html" + html);
 
             var tempHtmlFile = CreateHtmlWordDocument(html);
@@ -46,6 +46,8 @@ namespace JsonToWord.Services
             sdtContentBlock.AppendChild(altChunk);
 
             sdtBlock.AppendChild(sdtContentBlock);
+            RemoveExtraParagraphsAfterAltChunk(document);
+
         }
 
         internal string CreateHtmlWordDocument(string html)
@@ -120,6 +122,26 @@ namespace JsonToWord.Services
 
             return html;
         }
+        private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+{
+    var body = document.MainDocumentPart.Document.Body;
+    var altChunks = body.Descendants<AltChunk>().ToList();
+
+    foreach (var altChunk in altChunks)
+    {
+        var nextParagraph = altChunk.NextSibling<Paragraph>();
+        if (nextParagraph != null && !nextParagraph.Descendants<Run>().Any())
+        {
+            nextParagraph.Remove();
+        }
+
+        var prevParagraph = altChunk.PreviousSibling<Paragraph>();
+        if (prevParagraph != null && !prevParagraph.Descendants<Run>().Any())
+        {
+            prevParagraph.Remove();
+        }
+    }
+}
 
         private static string FixBullets(string description, string mainClassPattern)
         {
