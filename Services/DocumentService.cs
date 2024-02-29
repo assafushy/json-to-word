@@ -22,6 +22,8 @@ namespace JsonToWord.Services
                     document.ChangeDocumentType(WordprocessingDocumentType.Document);
                     var mainPart = document.MainDocumentPart;
                     SetLandscape(mainPart);
+                    RemoveEmptyParagraphs(document);
+
                     mainPart.Document.Save();
                 }
 
@@ -63,6 +65,25 @@ namespace JsonToWord.Services
                 sectionProps.Append(pageSize);
             }
         }
+        public void RemoveEmptyParagraphs(WordprocessingDocument document)
+{
+    Body body = document.MainDocumentPart.Document.Body;
+
+    // Find all paragraphs that contain no text or only whitespace
+    var emptyParagraphs = body.Elements<Paragraph>()
+                              .Where(p => !p.Elements<Run>().Any(r => !string.IsNullOrWhiteSpace(r.InnerText)))
+                              .ToList();
+
+    // Remove all found empty paragraphs
+    foreach (var paragraph in emptyParagraphs)
+    {
+        paragraph.Remove();
+    }
+
+    // Save the changes to the document body
+    body.Save();
+}
+
 
         //internal void RunMacro(string documentPath, string macroName, StreamWriter sw)
         //{
