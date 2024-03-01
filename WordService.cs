@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq; // Add this line
 using DocumentFormat.OpenXml.Packaging;
 using JsonToWord.Models;
 using JsonToWord.Services;
