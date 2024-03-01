@@ -29,7 +29,7 @@ namespace JsonToWord.Services
                 return paragraph;
             foreach (var wordRun in wordParagraph.Runs)
             {
-                Console.WriteLine("-------------Run Text----------: " + wordRun.Text);
+                Console.WriteLine("-------------Run Text----------: " + WordRun);
             }
             var paragraphProperties = new ParagraphProperties();
             var paragraphStyleId = new ParagraphStyleId { Val = $"Heading{wordParagraph.HeadingLevel}" };
