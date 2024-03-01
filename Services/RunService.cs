@@ -47,19 +47,16 @@ namespace JsonToWord.Services
 
         private static void SetBreak(WordRun wordRun, Run run)
         {
-            Console.WriteLine("WordRun Text: " + wordRun.Text); // This will print the text from WordRun
-            Console.WriteLine("WordRun Text: " + wordRun.InsertLineBreak); // This will print the text from WordRun
+            if (wordRun.InsertLineBreak)
+                run.AppendChild(new Break());
         }
 
         private static void SetText(WordRun wordRun, Run run)
         {
-            if (wordRun.Text == "Test Description:")
-                return;
             if (string.IsNullOrEmpty(wordRun.Text))
                 return;
 
             var text = new Text { Text = wordRun.Text };
-            Console.WriteLine("text value: " + text.Text);
 
             if (wordRun.InsertSpace)
                 text.Space = SpaceProcessingModeValues.Preserve;
@@ -127,5 +124,4 @@ namespace JsonToWord.Services
             runProperties.AppendChild(underline);
         }
     }
-    
 }
