@@ -59,7 +59,7 @@ namespace JsonToWord
                             WordParagraph wordParagraph = (WordParagraph)wordObject;
                         foreach (var wordRun in wordParagraph.Runs)
                         {
-                            log.Info("WordParagraph Run Text: " + wordRun.Text); // Log the text of each WordRun
+                            Console.WriteLine("WordParagraph Run Text: " + wordRun.Text); // Log the text of each WordRun
                         }
                                 _textService.Write(document, contentControl.Title, (WordParagraph)wordObject);
                                 break;
