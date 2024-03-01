@@ -36,6 +36,7 @@ namespace JsonToWord.Services
                         var hyperlink = HyperlinkService.CreateHyperlink(id);
                         hyperlink.AppendChild(run);
 
+
                         paragraph.AppendChild(hyperlink);
                         }
                         catch (UriFormatException e)
@@ -47,6 +48,7 @@ namespace JsonToWord.Services
                     else
                     {
                         paragraph.AppendChild(run);
+
                     }
                 }
             }

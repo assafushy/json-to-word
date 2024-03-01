@@ -21,6 +21,9 @@ namespace JsonToWord.Services
             sdtContentBlock.AppendChild(table);
 
             sdtBlock.AppendChild(sdtContentBlock);
+
+            RemoveExtraParagraphsAfterAltChunk(document);
+
         }
 
         private Table CreateTable(WordprocessingDocument document, WordTable wordTable)
@@ -56,6 +59,7 @@ namespace JsonToWord.Services
 
                 foreach (var cell in documentRow.Cells)
                 {
+
                     var tableCellBorders = CreateTableCellBorders();
                     var tableCellWidth = new TableCellWidth { Width = cell.Width, Type = TableWidthUnitValues.Dxa };
 
@@ -85,9 +89,13 @@ namespace JsonToWord.Services
 
                     var tableCell = new TableCell();
                     tableCell.AppendChild(tableCellProperties);
+                    
 
                     tableCell = AppendParagraphs(tableCell, cell.Paragraphs, document);
+
                     tableCell = AppendAttachments(tableCell, cell.Attachments, document);
+
+
                     tableCell = AppendHtml(tableCell, cell.Html, document);
 
                     tableRow.AppendChild(tableCell);
@@ -101,19 +109,24 @@ namespace JsonToWord.Services
 
         private TableCell AppendHtml(TableCell tableCell, WordHtml html, WordprocessingDocument document)
         {
+
             if (html == null)
                 return tableCell;
 
             if (string.IsNullOrEmpty(html.Html))
             {
+
                 var paragraph = new Paragraph();
                 tableCell.AppendChild(paragraph);
 
                 return tableCell;
             }
+            var styledHtml = WrapHtmlWithStyle(html.Html);
 
             var htmlService = new HtmlService();
-            var tempHtmlFile = htmlService.CreateHtmlWordDocument(html.Html);
+            Console.WriteLine("styledHtml" + styledHtml);
+
+            var tempHtmlFile = htmlService.CreateHtmlWordDocument(styledHtml);
 
             var altChunkId = "altChunkId" + Guid.NewGuid().ToString("N");
             var chunk = document.MainDocumentPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.WordprocessingML, altChunkId);
@@ -128,7 +141,11 @@ namespace JsonToWord.Services
 
             return tableCell;
         }
-
+        private string WrapHtmlWithStyle(string originalHtml)
+        {
+            // This method wraps the HTML content with additional HTML tags and styles
+            return $"<html style=\"font-family: Arial, sans-serif; font-size: 12pt;\"><body>{originalHtml}</body></html>";
+        }
         private TableCell AppendAttachments(TableCell tableCell, List<WordAttachment> wordAttachments, WordprocessingDocument document)
         {
             if (wordAttachments == null || !wordAttachments.Any())
@@ -256,6 +273,35 @@ namespace JsonToWord.Services
             tableBorders.AppendChild(insideVerticalBorder);
 
             return tableBorders;
+        }
+         private void RemoveExtraParagraphsAfterAltChunk(WordprocessingDocument document)
+        {
+            var body = document.MainDocumentPart.Document.Body;
+            var altChunks = body.Descendants<AltChunk>().ToList();
+
+            foreach (var altChunk in altChunks)
+            {
+                // Check for a paragraph immediately following the AltChunk
+                var nextParagraph = altChunk.NextSibling<Paragraph>();
+                if (nextParagraph != null)
+                {
+                    // Check if the paragraph is empty and if so, remove it
+                    if (!nextParagraph.Descendants<Run>().Any())
+                    {
+                        nextParagraph.Remove();
+                    }
+                }
+
+                // Check for a paragraph immediately preceding the AltChunk and remove if empty
+                var prevParagraph = altChunk.PreviousSibling<Paragraph>();
+                if (prevParagraph != null)
+                {
+                    if (!prevParagraph.Descendants<Run>().Any())
+                    {
+                        prevParagraph.Remove();
+                    }
+                }
+            }
         }
     }
 }

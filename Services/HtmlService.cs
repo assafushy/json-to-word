@@ -19,8 +19,9 @@ namespace JsonToWord.Services
         internal void Insert(WordprocessingDocument document, string contentControlTitle, WordHtml wordHtml)
         {
             var html = SetHtmlFormat(wordHtml.Html);
-            
+
             html = RemoveWordHeading(html);
+
 
             html = FixBullets(html);
 
