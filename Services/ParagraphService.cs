@@ -1,5 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using JsonToWord.Models;
+using System;
+using System.Collections.Generic;  // Ensure this using directive is included for List<T>
 
 namespace JsonToWord.Services
 {
@@ -7,7 +9,11 @@ namespace JsonToWord.Services
     {
         internal Paragraph CreateParagraph(WordParagraph wordParagraph)
         {
-            foreach (var wordRun in wordParagraph.Runs)
+            var paragraph = new Paragraph();
+  
+            if (wordParagraph.HeadingLevel == 0)
+                return paragraph;
+foreach (var wordRun in wordParagraph.Runs)
 {
     string runDetails = $"Text: {wordRun.Text}, " +
                         $"Bold: {wordRun.Bold}, " +
@@ -21,11 +27,6 @@ namespace JsonToWord.Services
 
     Console.WriteLine("-------------Run Details----------: " + runDetails);
 }
-
-            var paragraph = new Paragraph();
-
-            if (wordParagraph.HeadingLevel == 0)
-                return paragraph;
 
             var paragraphProperties = new ParagraphProperties();
             var paragraphStyleId = new ParagraphStyleId { Val = $"Heading{wordParagraph.HeadingLevel}" };
