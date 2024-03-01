@@ -4,8 +4,6 @@ using JsonToWord.Models;
 using JsonToWord.Services;
 using System.IO;
 using JsonToWord.Services.Interfaces;
-using System.Linq;
-
 
 namespace JsonToWord
 {
@@ -70,7 +68,7 @@ namespace JsonToWord
     }
     else
     {
-        Console.WriteLine.Info("Skipped inserting WordParagraph with 'Test Description:'");
+        log.Info("Skipped inserting WordParagraph with 'Test Description:'");
     }
                                 break;
                             case WordObjectType.Table:
