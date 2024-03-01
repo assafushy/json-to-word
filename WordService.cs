@@ -56,6 +56,11 @@ namespace JsonToWord
                                 _pictureService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
                                 break;
                             case WordObjectType.Paragraph:
+                            WordParagraph wordParagraph = (WordParagraph)wordObject;
+                        foreach (var wordRun in wordParagraph.Runs)
+                        {
+                            log.Info("WordParagraph Run Text: " + wordRun.Text); // Log the text of each WordRun
+                        }
                                 _textService.Write(document, contentControl.Title, (WordParagraph)wordObject);
                                 break;
                             case WordObjectType.Table:
