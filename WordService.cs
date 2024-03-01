@@ -4,6 +4,8 @@ using JsonToWord.Models;
 using JsonToWord.Services;
 using System.IO;
 using JsonToWord.Services.Interfaces;
+using System.Linq;
+
 
 namespace JsonToWord
 {
@@ -56,12 +58,20 @@ namespace JsonToWord
                                 _pictureService.Insert(document, contentControl.Title, (WordAttachment)wordObject);
                                 break;
                             case WordObjectType.Paragraph:
-                            WordParagraph wordParagraph = (WordParagraph)wordObject;
-                        foreach (var wordRun in wordParagraph.Runs)
-                        {
-                            Console.WriteLine("WordParagraph Run Text: " + wordRun.Text); // Log the text of each WordRun
-                        }
-                                _textService.Write(document, contentControl.Title, (WordParagraph)wordObject);
+  WordParagraph wordParagraph = (WordParagraph)wordObject;
+
+    // Check if any WordRun in the paragraph contains the text "Test Description:"
+    bool containsTestDescription = wordParagraph.Runs.Any(run => run.Text == "Test Description:");
+
+    if (!containsTestDescription)
+    {
+        // If the paragraph does not contain "Test Description:", insert it into the document
+        _textService.Write(document, contentControl.Title, wordParagraph);
+    }
+    else
+    {
+        Console.WriteLine.Info("Skipped inserting WordParagraph with 'Test Description:'");
+    }
                                 break;
                             case WordObjectType.Table:
                                 _tableService.Insert(document, contentControl.Title, (WordTable)wordObject);
