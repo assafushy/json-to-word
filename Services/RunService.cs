@@ -112,7 +112,7 @@ namespace JsonToWord.Services
                 AddUnderline(runProperties);
             }
             else
-            {
+            {z
                 var runFonts = new RunFonts { Ascii = wordRun.Font, HighAnsi = wordRun.Font, ComplexScript = wordRun.Font };
                 runProperties.AppendChild(runFonts);
             }
